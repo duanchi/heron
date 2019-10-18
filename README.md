@@ -1,1 +1,1 @@
-wand-go
+wand
