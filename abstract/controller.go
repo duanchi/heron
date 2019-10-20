@@ -1,8 +1,8 @@
 package abstract
 
 import (
-	"wand/core/types"
 	"github.com/gin-gonic/gin"
+	"heurd.com/wand-go/wand/types"
 )
 
 type Controller struct {

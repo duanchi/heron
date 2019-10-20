@@ -10,28 +10,7 @@ import (
 	"reflect"
 )
 
-func RestfulHandle (engine *gin.Engine, resources map[string]interface{}) *gin.Engine {
-	return restfulHandle(engine, resources)
-}
-
-func restfulHandle (engine *gin.Engine, resources map[string]interface{}) *gin.Engine {
-
-	for resource, _ := range resources {
-		/*engine.Any("/" + resource, func(ctx *gin.Context) {
-			executeHandle(resource, ctx, engine)
-		})*/
-		engine.Any("/" + resource + "/", func(ctx *gin.Context) {
-			executeHandle(resource, ctx, engine)
-		})
-		engine.Any("/" + resource + "/:id", func(ctx *gin.Context) {
-			executeHandle(resource, ctx, engine)
-		})
-	}
-
-	return engine
-}
-
-func executeHandle(resource string, ctx *gin.Context, engine *gin.Engine) {
+func ExecuteHandle(resource string, ctx *gin.Context, engine *gin.Engine) {
 	params := ctx.Params
 	id := ctx.Param("id")
 	method := ctx.Request.Method

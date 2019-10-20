@@ -3,18 +3,18 @@ package wand
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"heurd.com/wand-go/wand/bean"
 	"heurd.com/wand-go/wand/config"
 )
 var HttpServer *gin.Engine
-var Config config.CoreConfig
 
-func Bootstrap(configuration interface{}, routes map[string]interface{}) {
+func Bootstrap(configuration interface{}, beanConfiguration interface{}) {
 	config.Init(configuration)
-	Config = configuration.(config.CoreConfig)
+	bean.Init(beanConfiguration)
 
-	fmt.Print(Config.Env)
+	fmt.Print(config.Get("Application.ServerPort").(string))
 
-	/*container.Init()
+	/*bean.Init()
 	server.Init(routes)
 
 	HttpServer = server.HttpServer*/

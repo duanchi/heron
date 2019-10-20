@@ -1,7 +1,7 @@
 package _interface
 
 import (
-	"wand/core/types"
+	"heurd.com/wand-go/wand/types"
 	"github.com/gin-gonic/gin"
 )
 
