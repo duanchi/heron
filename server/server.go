@@ -2,29 +2,28 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
+	"heurd.com/wand-go/wand/config"
+	"heurd.com/wand-go/wand/server/route"
 	"log"
-	"wand"
-	"wand/server/route"
 )
 
-var DB *xorm.Engine
+// var DB *xorm.Engine
 var HttpServer *gin.Engine
 
-func Init (routes map[string]interface{}) {
+func Init () {
 	HttpServer = gin.Default()
 
 
-	if wand.Config.Env == "production" {
+	if config.Get("Env").(string) == "production" {
 		gin.SetMode("release")
 	} else {
 		gin.SetMode("debug")
 	}
 
 
-	route.Init(HttpServer, routes)
+	route.Init(HttpServer, &route.Routes)
 
-	serverError := HttpServer.Run(":" + wand.Config.ServerPort)
+	serverError := HttpServer.Run(":" + config.Get("Application.ServerPort").(string))
 
 	if serverError != nil {
 		log.Fatal(serverError)

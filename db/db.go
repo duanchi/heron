@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
+	"heurd.com/wand-go/wand/config"
 	"log"
 	"xorm.io/core"
 )
 
+var Connection *xorm.Engine
 
 func Init () {
-
+	fmt.Print("abdaf")
+	var dsn = config.Get("Db.Dsn").(string)
+	connect(dsn)
 }
 
-func connect () *xorm.Engine {
-	dsn := "host=172.31.16.1 port=3308 user=tb_cloud password=123456 dbname=thingsboard sslmode=disable"
+func connect (dsn string) *xorm.Engine {
 	db, err := xorm.NewEngine("postgres", dsn)
 	if err != nil {
 		fmt.Printf("Database Init Error %s", dsn)

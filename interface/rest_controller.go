@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ControllerInterface interface {
+type RestControllerInterface interface {
 	Fetch(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error)
 
 	Create(id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error)

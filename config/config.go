@@ -49,39 +49,52 @@ func parseConfig (config interface{}) {
 			if configValue.Field(i).Kind() == reflect.Struct {
 				parseConfig(configValue.Field(i).Addr().Interface())
 			} else {
-				value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
+				var v string
+				if configType.Field(i).Tag.Get("env") != "" {
+					value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
+					if value[0] != "" {
+						v = util.Getenv(value[0], value[1])
+					} else {
+						v = ""
+					}
+
+				} else if configType.Field(i).Tag.Get("value") != "" {
+					v = configType.Field(i).Tag.Get("value")
+				}
+				// value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
 				class := configType.Field(i).Type.Kind()
-				if value[0] != "" {
-					v := util.Getenv(value[0], value[1])
-					switch class {
-					case reflect.String:
-						configValue.Field(i).SetString(v)
+				switch class {
+				case reflect.String:
+					configValue.Field(i).SetString(v)
 
-					case reflect.Int, reflect.Int64:
-						value, err := strconv.ParseInt(v, 10, 64)
-						if err != nil {
-							configValue.Field(i).SetInt(0)
-						} else {
-							configValue.Field(i).SetInt(value)
-						}
+				case reflect.Int, reflect.Int64:
+					value, err := strconv.ParseInt(v, 10, 64)
+					if err != nil {
+						configValue.Field(i).SetInt(0)
+					} else {
+						configValue.Field(i).SetInt(value)
+					}
 
-					case reflect.Bool:
-						value, err := strconv.ParseBool(v)
-						if err != nil {
-							configValue.Field(i).SetBool(false)
-						} else {
-							configValue.Field(i).SetBool(value)
-						}
+				case reflect.Bool:
+					value, err := strconv.ParseBool(v)
+					if err != nil {
+						configValue.Field(i).SetBool(false)
+					} else {
+						configValue.Field(i).SetBool(value)
+					}
 
-					case reflect.Float64:
-						value, err := strconv.ParseFloat(v, 10)
-						if err != nil {
-							configValue.Field(i).SetFloat(0)
-						} else {
-							configValue.Field(i).SetFloat(value)
-						}
+				case reflect.Float64:
+					value, err := strconv.ParseFloat(v, 10)
+					if err != nil {
+						configValue.Field(i).SetFloat(0)
+					} else {
+						configValue.Field(i).SetFloat(value)
 					}
 				}
+				/*if value[0] != "" {
+					v := util.Getenv(value[0], value[1])
+
+				}*/
 			}
 		}
 	}

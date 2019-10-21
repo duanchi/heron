@@ -1,8 +1,7 @@
 package route
 
 import (
-	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/server"
+	_interface "heurd.com/wand-go/wand/interface"
 	"heurd.com/wand-go/wand/types"
 	"reflect"
 )
@@ -16,11 +15,6 @@ func (parser RouteBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, 
 	resource := tag.Get("route")
 
 	if resource != "" {
-		server.HttpServer.Any("/" + resource + "/", func(ctx *gin.Context) {
-			server.ExecuteHandle(resource, ctx, server.HttpServer)
-		})
-		server.HttpServer.Any("/" + resource + "/:id", func(ctx *gin.Context) {
-			server.ExecuteHandle(resource, ctx, server.HttpServer)
-		})
+		Routes[resource] = bean.Interface().(_interface.RestControllerInterface)
 	}
 }
