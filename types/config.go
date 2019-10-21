@@ -5,6 +5,10 @@ import "reflect"
 type Config struct {
 	ServerPort string
 	BeanParsers []BeanParser
+	Db struct{
+		Enabled bool `value:"false"`
+		Dsn string
+	}
 }
 
 type BeanParser struct {

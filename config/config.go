@@ -49,7 +49,7 @@ func parseConfig (config interface{}) {
 			if configValue.Field(i).Kind() == reflect.Struct {
 				parseConfig(configValue.Field(i).Addr().Interface())
 			} else {
-				var v string
+				v := ""
 				if configType.Field(i).Tag.Get("env") != "" {
 					value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
 					if value[0] != "" {
@@ -58,10 +58,11 @@ func parseConfig (config interface{}) {
 						v = ""
 					}
 
-				} else if configType.Field(i).Tag.Get("value") != "" {
+				}
+				if v == "" && configType.Field(i).Tag.Get("value") != "" {
 					v = configType.Field(i).Tag.Get("value")
 				}
-				// value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
+
 				class := configType.Field(i).Type.Kind()
 				switch class {
 				case reflect.String:
