@@ -11,7 +11,7 @@ import (
 	"runtime/debug"
 )
 
-func RestfulHandle(resource string, controller *_interface.RestControllerInterface, ctx *gin.Context, engine *gin.Engine) {
+func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, engine *gin.Engine) {
 	params := ctx.Params
 	id := ctx.Param("id")
 	method := ctx.Request.Method
@@ -23,8 +23,6 @@ func RestfulHandle(resource string, controller *_interface.RestControllerInterfa
 		Message: "Ok",
 	}
 
-	fmt.Printf("resource: %s", resource)
-
 	defer func() {
 		statusCode := http.StatusInternalServerError
 
@@ -33,21 +31,33 @@ func RestfulHandle(resource string, controller *_interface.RestControllerInterfa
 				if err := recover(); err != nil {
 					response.Message = fmt.Sprint(exception)
 				}
-
+				debug.PrintStack()
 				ctx.JSON(statusCode, response)
 			}()
 			runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
 			fmt.Println(runtimeError.Error())
 			response.Message = runtimeError.Error()
 			statusCode = runtimeError.Code()
-			debug.PrintStack()
 		}
 	}()
 
-	// handle := internal.Container.Get(resource).Interface().(_interface.ControllerInterface)
 	var data interface{}
 	var err error
-	executor := reflect.ValueOf(controller).Elem().Interface().(_interface.RestControllerInterface)
+	/*arguments := []reflect.Value{
+		reflect.ValueOf(id),
+		reflect.ValueOf(resource),
+		reflect.ValueOf(&params),
+		reflect.ValueOf(ctx),
+	}*/
+	// var result []reflect.Value
+	executor := controller.Elem().Interface().(_interface.RestControllerInterface)
+
+	fmt.Printf("CONTROLLER %s", controller.Elem().Type().Name())
+
+	/*for i := 0; i < reflect.TypeOf(controller).Elem().NumMethod(); i++ {
+		fmt.Printf("Controller %s", reflect.TypeOf(controller).Elem().Method(i).Name)
+	}*/
+
 
 	switch method {
 	case "GET":
@@ -63,6 +73,16 @@ func RestfulHandle(resource string, controller *_interface.RestControllerInterfa
 	case "OPTIONS":
 		data, err = executor.Fetch(id, resource, &params, ctx)
 	}
+
+	/*data = result[0]
+
+	resultLenght := len(result)
+
+	if (resultLenght > 1) {
+		err = result[1]
+		fmt.Println(err == nil)
+	}*/
+
 
 	if err == nil {
 		response.Status = true

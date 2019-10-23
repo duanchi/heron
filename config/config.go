@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"heurd.com/wand-go/wand/util"
 	"reflect"
 	"strconv"
@@ -18,20 +19,48 @@ func Get(key string) interface{} {
 
 	keyStack := strings.Split(key, ".")
 	value := configInstance
-	isStruct := false
+
 	for i := 0; i < len(keyStack); i++ {
 
-		if reflect.TypeOf(value).Kind() == reflect.Struct {
-			isStruct = true
-		}
+		//fmt.Printf("key: %s, kind %s",keyStack[i], reflect.TypeOf(value).Kind())
 
-		if i < len(keyStack) - 1 && reflect.TypeOf(value).Kind() != reflect.Ptr && reflect.TypeOf(value).Kind() != reflect.Struct {
+		if i < len(keyStack) - 1 && reflect.ValueOf(value).IsValid() && reflect.TypeOf(value).Kind() != reflect.Ptr && reflect.TypeOf(value).Kind() != reflect.Struct {
 			return nil
 		} else {
-			if isStruct {
-				value = reflect.ValueOf(value).FieldByName(keyStack[i]).Interface()
-			} else {
-				value = reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).Interface()
+			if reflect.TypeOf(value).Kind() == reflect.Struct {
+				if reflect.ValueOf(value).FieldByName(keyStack[i]).IsValid() {
+					value = reflect.ValueOf(value).FieldByName(keyStack[i]).Interface()
+				} else {
+					value = new(interface{})
+				}
+			} else if reflect.TypeOf(value).Kind() == reflect.Ptr {
+				if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsValid() {
+					value = reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).Interface()
+				} else {
+					value = struct{}{}
+				}
+
+			}else {
+				fmt.Println(keyStack[i])
+				if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsZero() {
+					switch reflect.TypeOf(value).Kind() {
+					case reflect.Int, reflect.Int64:
+						value = 0
+
+					case reflect.String:
+						value = ""
+
+					case reflect.Float64:
+						value = 0.00
+
+					case reflect.Bool:
+						value = false
+					}
+				} else if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsNil() {
+					value = nil
+				} else {
+					value = reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).Interface()
+				}
 			}
 		}
 	}

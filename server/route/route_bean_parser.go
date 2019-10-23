@@ -1,7 +1,6 @@
 package route
 
 import (
-	_interface "heurd.com/wand-go/wand/interface"
 	"heurd.com/wand-go/wand/types"
 	"reflect"
 )
@@ -15,6 +14,6 @@ func (parser RouteBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, 
 	resource := tag.Get("route")
 
 	if resource != "" {
-		Routes[resource] = bean.Interface().(_interface.RestControllerInterface)
+		Routes[resource] = bean.Addr()
 	}
 }
