@@ -14,6 +14,6 @@ func (parser RouteBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, 
 	resource := tag.Get("route")
 
 	if resource != "" {
-		Routes[resource] = bean.Addr()
+		Routes[resource] = bean
 	}
 }

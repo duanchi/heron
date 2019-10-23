@@ -43,21 +43,8 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 
 	var data interface{}
 	var err error
-	/*arguments := []reflect.Value{
-		reflect.ValueOf(id),
-		reflect.ValueOf(resource),
-		reflect.ValueOf(&params),
-		reflect.ValueOf(ctx),
-	}*/
-	// var result []reflect.Value
+
 	executor := controller.Elem().Interface().(_interface.RestControllerInterface)
-
-	fmt.Printf("CONTROLLER %s", controller.Elem().Type().Name())
-
-	/*for i := 0; i < reflect.TypeOf(controller).Elem().NumMethod(); i++ {
-		fmt.Printf("Controller %s", reflect.TypeOf(controller).Elem().Method(i).Name)
-	}*/
-
 
 	switch method {
 	case "GET":
@@ -73,16 +60,6 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	case "OPTIONS":
 		data, err = executor.Fetch(id, resource, &params, ctx)
 	}
-
-	/*data = result[0]
-
-	resultLenght := len(result)
-
-	if (resultLenght > 1) {
-		err = result[1]
-		fmt.Println(err == nil)
-	}*/
-
 
 	if err == nil {
 		response.Status = true
