@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	_interface "heurd.com/wand-go/wand/interface"
 	"heurd.com/wand-go/wand/types"
 	"net/http"
 	"reflect"
+	"runtime/debug"
 )
 
 func RestfulHandle(resource string, controller _interface.RestControllerInterface, ctx *gin.Context, engine *gin.Engine) {
@@ -25,18 +27,18 @@ func RestfulHandle(resource string, controller _interface.RestControllerInterfac
 		statusCode := http.StatusInternalServerError
 
 		if exception := recover(); exception != nil {
-			runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
-			response.Message = runtimeError.Error()
-			statusCode = runtimeError.Code()
-
 			defer func() {
 				if err := recover(); err != nil {
-					commonError := reflect.ValueOf(exception).Interface().(error)
-					response.Message = commonError.Error()
+					response.Message = fmt.Sprint(exception)
 				}
 
 				ctx.JSON(statusCode, response)
 			}()
+			runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
+			fmt.Println(runtimeError.Error())
+			response.Message = runtimeError.Error()
+			statusCode = runtimeError.Code()
+			debug.PrintStack()
 		}
 	}()
 

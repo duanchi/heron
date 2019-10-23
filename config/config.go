@@ -53,7 +53,12 @@ func parseConfig (config interface{}) {
 				if configType.Field(i).Tag.Get("env") != "" {
 					value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
 					if value[0] != "" {
-						v = util.Getenv(value[0], value[1])
+						if len(value) > 1 {
+							v = util.Getenv(value[0], value[0])
+						} else {
+							v = util.Getenv(value[0], "")
+						}
+
 					} else {
 						v = ""
 					}

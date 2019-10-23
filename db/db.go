@@ -12,30 +12,34 @@ import (
 var Connection *xorm.Engine
 
 func Init () {
-	fmt.Print("abdaf")
 	var dsn = config.Get("Db.Dsn").(string)
-	connect(dsn)
+	var err error
+	Connection, err = connect(dsn)
+
+	if err != nil {
+
+	}
 }
 
-func connect (dsn string) *xorm.Engine {
-	db, err := xorm.NewEngine("postgres", dsn)
+func connect (dsn string) (connection *xorm.Engine, err error) {
+	connection, err = xorm.NewEngine("postgres", dsn)
 	if err != nil {
 		fmt.Printf("Database Init Error %s", dsn)
 		log.Fatal(err)
-		return nil
+		return
 	}
 
-	db.SetSchema("cloud")
-	db.ShowSQL()
+	connection.SetSchema("cloud")
+	connection.ShowSQL()
 
-	err = db.Ping()
+	err = connection.Ping()
 	if err != nil {
 		log.Fatal(err)
-		return nil
+		return
 	}
 	fmt.Println("connect postgresql success")
 
-	db.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, "tb_"))
+	connection.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, "tb_"))
 
-	return db
+	return
 }
