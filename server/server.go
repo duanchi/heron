@@ -21,7 +21,7 @@ func Init () {
 	}
 
 
-	route.Init(HttpServer, &route.Routes)
+	route.Init(HttpServer)
 
 	serverError := HttpServer.Run(":" + config.Get("Application.ServerPort").(string))
 
