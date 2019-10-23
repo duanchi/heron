@@ -11,7 +11,11 @@ var Routes = map[string]_interface.RestControllerInterface{}
 
 func Init(httpSever *gin.Engine, routes *map[string]_interface.RestControllerInterface) {
 
-	for resource, controller := range reflect.ValueOf(routes).Elem().Interface().(map[string]_interface.RestControllerInterface) {
+	for key, bean := range reflect.ValueOf(routes).Elem().Interface().(map[string]_interface.RestControllerInterface) {
+
+		resource := key
+		controller := &bean
+
 		httpSever.Any("/" + resource + "/", func(ctx *gin.Context) {
 			handler.RestfulHandle(resource, controller, ctx, httpSever)
 		})

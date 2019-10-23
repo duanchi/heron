@@ -11,7 +11,7 @@ import (
 	"runtime/debug"
 )
 
-func RestfulHandle(resource string, controller _interface.RestControllerInterface, ctx *gin.Context, engine *gin.Engine) {
+func RestfulHandle(resource string, controller *_interface.RestControllerInterface, ctx *gin.Context, engine *gin.Engine) {
 	params := ctx.Params
 	id := ctx.Param("id")
 	method := ctx.Request.Method
@@ -22,6 +22,8 @@ func RestfulHandle(resource string, controller _interface.RestControllerInterfac
 		Data: nil,
 		Message: "Ok",
 	}
+
+	fmt.Printf("resource: %s", resource)
 
 	defer func() {
 		statusCode := http.StatusInternalServerError
@@ -45,20 +47,21 @@ func RestfulHandle(resource string, controller _interface.RestControllerInterfac
 	// handle := internal.Container.Get(resource).Interface().(_interface.ControllerInterface)
 	var data interface{}
 	var err error
+	executor := reflect.ValueOf(controller).Elem().Interface().(_interface.RestControllerInterface)
 
 	switch method {
 	case "GET":
-		data, err = controller.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, &params, ctx)
 	case "POST":
-		data, err = controller.Create(id, resource, &params, ctx)
+		data, err = executor.Create(id, resource, &params, ctx)
 	case "PUT":
-		data, err = controller.Update(id, resource, &params, ctx)
+		data, err = executor.Update(id, resource, &params, ctx)
 	case "DELETE":
-		data, err = controller.Remove(id, resource, &params, ctx)
+		data, err = executor.Remove(id, resource, &params, ctx)
 	case "HEAD":
-		data, err = controller.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, &params, ctx)
 	case "OPTIONS":
-		data, err = controller.Fetch(id, resource, &params, ctx)
+		data, err = executor.Fetch(id, resource, &params, ctx)
 	}
 
 	if err == nil {
