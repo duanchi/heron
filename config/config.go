@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"heurd.com/wand-go/wand/util"
 	"reflect"
 	"strconv"
@@ -41,7 +40,6 @@ func Get(key string) interface{} {
 				}
 
 			}else {
-				fmt.Println(keyStack[i])
 				if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsZero() {
 					switch reflect.TypeOf(value).Kind() {
 					case reflect.Int, reflect.Int64:
@@ -51,7 +49,7 @@ func Get(key string) interface{} {
 						value = ""
 
 					case reflect.Float64:
-						value = 0.00
+						value = 0
 
 					case reflect.Bool:
 						value = false

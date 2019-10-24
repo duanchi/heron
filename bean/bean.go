@@ -6,7 +6,7 @@ import (
 	"reflect"
 )
 
-var beanContainer interface{}
+// var beanContainer interface{}
 var beanMaps = map[string]reflect.Value{}
 var coreBeanParser = []interface{}{
 	&route.RouteBeanParser{},
@@ -45,11 +45,15 @@ func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Typ
 		Register(containerValue.Field(i), containerType.Field(i))
 	}
 
-	beanContainer = beanContainerInstance
+	// beanContainer = beanContainerInstance
+
+	for _, bean := range beanMaps {
+		Inject(bean, beanMaps)
+	}
 }
 
 func Get (name string) interface{} {
-	return reflect.ValueOf(beanContainer).Elem().FieldByName(name)
+	return beanMaps[name].Interface()
 }
 
 func GetAll() map[string]reflect.Value {
@@ -62,8 +66,9 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 	if name == "" {
 		name = beanDefinition.Name
 	}
-	beanValue.Set(reflect.New(beanDefinition.Type).Elem())
-	beanMaps[name] = beanValue.Addr()
+	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
+
+	// beanValue.Set(beanMaps[name].Addr())
 
 	extendParse(tag, beanMaps[name], beanDefinition.Type)
 }

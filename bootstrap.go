@@ -12,7 +12,6 @@ func Bootstrap(configuration interface{}, beanConfiguration interface{}) {
 	Config = configuration
 
 	bean.Init(beanConfiguration)
-	Bean = beanConfiguration
 
 	if config.Get("Db.Enabled").(bool) == true {
 		db.Init()
