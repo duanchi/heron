@@ -8,6 +8,7 @@ import (
 
 // var beanContainer interface{}
 var beanMaps = map[string]reflect.Value{}
+var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var coreBeanParser = []interface{}{
 	&route.RouteBeanParser{},
 }
@@ -62,11 +63,13 @@ func GetAll() map[string]reflect.Value {
 
 func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 	tag := beanDefinition.Tag
+	beanType := beanDefinition.Type
 	name := tag.Get("name")
 	if name == "" {
 		name = beanDefinition.Name
 	}
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
+	beanTypeMaps[beanType] = beanMaps[name].Addr()
 
 	// beanValue.Set(beanMaps[name].Addr())
 

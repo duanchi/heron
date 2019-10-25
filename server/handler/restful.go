@@ -44,7 +44,7 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	var data interface{}
 	var err error
 
-	executor := controller.Elem().Interface().(_interface.RestControllerInterface)
+	executor := controller.Interface().(_interface.RestControllerInterface)
 
 	switch method {
 	case "GET":
