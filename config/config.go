@@ -15,15 +15,44 @@ func Init(config interface{}) {
 }
 
 func Get(key string) interface{} {
+	return GetRaw(key).Interface()
+}
+
+func GetRaw(key string) reflect.Value {
 
 	keyStack := strings.Split(key, ".")
-	value := configInstance
+	value := reflect.ValueOf(configInstance).Elem()
 
 	for i := 0; i < len(keyStack); i++ {
 
 		//fmt.Printf("key: %s, kind %s",keyStack[i], reflect.TypeOf(value).Kind())
 
-		if i < len(keyStack) - 1 && reflect.ValueOf(value).IsValid() && reflect.TypeOf(value).Kind() != reflect.Ptr && reflect.TypeOf(value).Kind() != reflect.Struct {
+		// 调用栈不是末尾, 并且value是可用值, 并且value是基础类型
+		if i < len(keyStack) - 1 && value.IsValid() && value.Kind() != reflect.Ptr && value.Kind() != reflect.Struct {
+			return reflect.New(value.Type())
+		} else {
+			if value.Kind() == reflect.Struct {
+				if value.FieldByName(keyStack[i]).IsValid() {
+					value = value.FieldByName(keyStack[i])
+				} else {
+					value = reflect.New(value.Type())
+				}
+			} else if value.Kind() == reflect.Ptr {
+				if value.Elem().FieldByName(keyStack[i]).IsValid() {
+					value = value.Elem().FieldByName(keyStack[i])
+				} else {
+					value = reflect.New(value.Elem().Type())
+				}
+			} else {
+				if value.Elem().FieldByName(keyStack[i]).IsZero() || value.Elem().FieldByName(keyStack[i]).IsNil() {
+					value = reflect.New(value.Elem().Type())
+				} else {
+					value = value.Elem().FieldByName(keyStack[i])
+				}
+			}
+		}
+
+		/*if i < len(keyStack) - 1 && reflect.ValueOf(value).IsValid() && reflect.TypeOf(value).Kind() != reflect.Ptr && reflect.TypeOf(value).Kind() != reflect.Struct {
 			return nil
 		} else {
 			if reflect.TypeOf(value).Kind() == reflect.Struct {
@@ -60,10 +89,10 @@ func Get(key string) interface{} {
 					value = reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).Interface()
 				}
 			}
-		}
+		}*/
 	}
 
-	return reflect.ValueOf(value).Interface()
+	return value
 }
 
 func parseConfig (config interface{}) {
@@ -124,10 +153,6 @@ func parseConfig (config interface{}) {
 						configValue.Field(i).SetFloat(value)
 					}
 				}
-				/*if value[0] != "" {
-					v := util.Getenv(value[0], value[1])
-
-				}*/
 			}
 		}
 	}
