@@ -80,9 +80,12 @@ func parseTagNamedAutowired(value string, field reflect.Value) {
 	setAutowired, _ := strconv.ParseBool(value)
 	beanType := field.Type()
 	if setAutowired {
-		rawBean, ok := beanTypeMaps[beanType]
+
+
+
+		beanPointer, ok := beanTypeMaps[beanType]
 		if ok {
-			field.Set(rawBean.Elem())
+			field.Set(beanPointer)
 		}
 	}
 }
