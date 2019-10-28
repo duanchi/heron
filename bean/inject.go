@@ -19,6 +19,7 @@ func Inject (rawBean reflect.Value, beanMap map[string]reflect.Value) {
 			fieldTag := beanType.Field(i).Tag
 
 			parseTagNamedValue(fieldTag.Get("value"), rawBean.Field(i))
+			parseTagNamedAutowired(fieldTag.Get("autowired"), rawBean.Field(i))
 		}
 
 	}
@@ -75,6 +76,13 @@ func parseTagNamedValue(value string, field reflect.Value) {
 	}
 }
 
-func parseTagNamedAutowired() {
-
+func parseTagNamedAutowired(value string, field reflect.Value) {
+	setAutowired, _ := strconv.ParseBool(value)
+	beanType := field.Type()
+	if setAutowired {
+		rawBean, ok := beanTypeMaps[beanType]
+		if ok {
+			field.Set(rawBean.Elem())
+		}
+	}
 }
