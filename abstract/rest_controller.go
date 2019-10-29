@@ -6,6 +6,7 @@ import (
 )
 
 type RestController struct {
+	Bean
 }
 
 func (controller RestController) Fetch (id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error) {
