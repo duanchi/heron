@@ -105,9 +105,9 @@ root
 - mapper
   - xxx.go `数据库mapper文件`
 
-## Bean容器
+## IOC容器
 
-借鉴于`Java Spring`的`Bean`概念，可以通过定义`Bean`进行项目中实体实例的管理，在初始化后可在任何位置调用。
+借鉴于`Java Spring`的`IOC容器`概念，可以通过定义`Bean`进行项目中实体实例的管理，在初始化后可在任何位置调用。
 
 ### Bean定义
 
@@ -118,19 +118,82 @@ package config
 
 var Beans = struct {
 	DataDevices controller.DevicesController `route:"data/devices"`
+  [bean name] [bean struct] `[bean tags]`
 }{}
 ```
 
-项目初始化后可直接通过获取`Bean`变量字段调用`Bean`
+若需实现上述Bean的IOC/DI，需继承`wand.abstract.Bean`类型，并实现 `Init`方法
+
+> `wand.abstract.Bean`已经实现了空的`Init`方法，若初始化时不需任何额外操作，可不进行方法重写。
+
+
+
+> 预定义的抽象基础类`wand.abstract.RestController`和 `wand.abstract.Service`已经继承了`wand.abstract.Bean`类型，可以直接使用并在`Bean`定义文件中引用
 
 ```go
-import config
+type Devices struct {
+	abstract.Service
+	Config string `value:"${Db.Dsn,172.31.128.5}"`
+	Data *data.Devices `autowired:"true"`
+}
+
+func (service *Devices) Init() {
+	fmt.Println("Inited!") // 初始化时将打印 'Inited!'
+}
+```
+
+
+
+#### Bean初始化切面
+
+可通过实现`Bean`类型的`Init`方法实现`Bean`初始化后的操作
+
+#### [bean name]
+
+用于标识当前`Bean`的`name`，可在wand.GetBean方法参数中使用
+
+#### [bean struct]
+
+用于当前`Bean`类型或类的初始化，初始化后，将生成一个当前类型的实例
+
+#### [bean tags]
+
+用于描述当前`Bean`的特定属性，可在初始化后进行扩展操作
+
+`bean tag`的可取值如下
+
+##### `value`
+
+用于设置当前属性或字段的值，可以使用`${[config-stack]}`来进行配置文件的读取，读取的值将自动转换为当前字段的类型，支持的类型有`int`、`int64`、`float64`、`string`、`bool`、`struct`
+
+##### `autowired`
+
+用于在`Bean`初始化后，将含有当前字段类型的`Bean`自动装载至当前的字段中，装载时将装载对象的引用类型。
+
+> 自动装载时，字段类型需设置为将要装载类型`Bean`的指针类型，并将`autowired`值设置为`true`
+
+##### `route`
+
+详见`Http服务`章节中的`路由配置`
+
+#####  `扩展取值`
+
+提供可自定义的`tag`标签，并通过扩展方法执行`Bean`初始化时的扩展操作。
+
+> TODO: 更新自定义扩展
+
+项目初始化后可通过`wand.GetBean`方法获取`Bean`
+
+```go
+import wand
 
 func Test() {
-    config.Beans.Fecth()
+  wand.GetBean("Fecth").(Fetch).Get()
 }
 
 ```
+
+
 
 ## Http服务
 
