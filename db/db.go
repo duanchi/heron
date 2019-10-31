@@ -27,16 +27,17 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 
 	defer func() {
 		e := recover()
-		fmt.Printf("%s", e)
-		log.Fatal(err)
-
+		if e != nil {
+			fmt.Printf("%s", e)
+			log.Fatal(err)
+		}
 		return
 	}()
 
 	switch dsnUrl.Scheme {
 	case "postgres":
 		password, _ := dsnUrl.User.Password()
-		tableStack := strings.Split(dsnUrl.Path, ".")
+		tableStack := strings.Split(strings.Trim(dsnUrl.Path, "/"), ".")
 		prefix := dsnUrl.Query().Get("prefix")
 		table := ""
 		schema := ""
@@ -82,25 +83,4 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 	connection.ShowSQL()
 
 	return
-
-	/*connection, err = xorm.NewEngine("postgres", dsn)
-	if err != nil {
-		fmt.Printf("Database Init Error %s", dsn)
-		log.Fatal(err)
-		return
-	}
-
-	connection.SetSchema("cloud")
-	connection.ShowSQL()
-
-	err = connection.Ping()
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	fmt.Println("connect postgresql success")
-
-	connection.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, "tb_"))
-
-	return*/
 }

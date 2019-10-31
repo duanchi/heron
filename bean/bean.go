@@ -76,7 +76,7 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 
 	// beanValue.Set(beanMaps[name].Addr())
 
-	extendParse(tag, beanMaps[name], beanDefinition.Type)
+	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type)
 }
 
 func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {
