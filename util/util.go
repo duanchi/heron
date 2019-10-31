@@ -1,6 +1,7 @@
 package util
 
 import (
+	uuid "github.com/satori/go.uuid"
 	"os"
 	"reflect"
 )
@@ -17,4 +18,8 @@ func Getenv (key string, defaults string) string {
 	} else {
 		return result
 	}
+}
+
+func GenerateUUID() uuid.UUID {
+	return uuid.NewV4()
 }
