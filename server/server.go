@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"heurd.com/wand-go/wand/config"
+	"heurd.com/wand-go/wand/server/middleware"
 	"heurd.com/wand-go/wand/server/route"
 	"log"
 )
@@ -20,6 +21,7 @@ func Init () {
 		gin.SetMode("debug")
 	}
 
+	middleware.Init(HttpServer, middleware.BeforeRoute)
 
 	route.Init(HttpServer)
 
