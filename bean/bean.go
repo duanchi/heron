@@ -2,6 +2,7 @@ package bean
 
 import (
 	_interface "heurd.com/wand-go/wand/interface"
+	"heurd.com/wand-go/wand/server/middleware"
 	"heurd.com/wand-go/wand/server/route"
 	"reflect"
 )
@@ -12,6 +13,7 @@ var beanMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var coreBeanParser = []interface{}{
 	&route.RouteBeanParser{},
+	&middleware.MiddlewareBeanParser{},
 }
 
 type Container struct {}

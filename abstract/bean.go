@@ -4,4 +4,4 @@ type Bean struct {
 
 }
 
-func (*Bean) Init () {}
+func (THIS *Bean) Init () {}
