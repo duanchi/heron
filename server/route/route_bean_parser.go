@@ -11,9 +11,10 @@ type RouteBeanParser struct {
 
 func (parser RouteBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {
 
-	resource := tag.Get("route")
+	route := tag.Get("route")
+	method := tag.Get("method")
 
-	if resource != "" {
-		Routes[resource] = bean
+	if route != "" {
+		BaseRoutes[route + "@" + method] = bean
 	}
 }

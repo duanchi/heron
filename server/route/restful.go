@@ -4,11 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"heurd.com/wand-go/wand/server/handler"
 	"heurd.com/wand-go/wand/server/middleware"
+	"reflect"
 )
 
-func Init(httpServer *gin.Engine) {
+type RestfulRoutesMap map[string]reflect.Value
 
-	for key, _ := range RestfulRoutes {
+var RestfulRoutes = RestfulRoutesMap{}
+
+func (THIS RestfulRoutesMap) Init (httpServer *gin.Engine) {
+	for key, _ := range THIS {
 
 		resource := key
 
