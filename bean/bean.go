@@ -1,6 +1,7 @@
 package bean
 
 import (
+	"fmt"
 	_interface "heurd.com/wand-go/wand/interface"
 	"heurd.com/wand-go/wand/server/middleware"
 	"heurd.com/wand-go/wand/server/route"
@@ -13,6 +14,7 @@ var beanMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var coreBeanParser = []interface{}{
 	&route.RouteBeanParser{},
+	&route.RestfulBeanParser{},
 	&middleware.MiddlewareBeanParser{},
 }
 
@@ -49,10 +51,12 @@ func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Typ
 		Register(containerValue.Field(i), containerType.Field(i))
 	}
 
-	// beanContainer = beanContainerInstance
-
 	for _, bean := range beanMaps {
 		Inject(bean, beanMaps)
+	}
+
+	for _, bean := range beanMaps {
+		parseInit(bean)
 	}
 }
 
@@ -74,15 +78,21 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 
-	// beanTypeMaps[beanType] = unsafe.Pointer(beanMaps[name].Addr())
-
-	// beanValue.Set(beanMaps[name].Addr())
-
 	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type)
+
+	fmt.Println("[Wand-Go] Init Bean: " + name)
 }
 
 func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {
 	for i := 0; i < len(coreBeanParser); i++ {
 		reflect.ValueOf(coreBeanParser[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition)
 	}
+}
+
+func parseInit(rawBean reflect.Value) {
+	defer func() {
+		if err := recover(); err != nil {
+		}
+	}()
+	rawBean.Addr().Interface().(_interface.BeanInterface).Init()
 }

@@ -2,7 +2,6 @@ package bean
 
 import (
 	"heurd.com/wand-go/wand/config"
-	_interface "heurd.com/wand-go/wand/interface"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -19,19 +18,9 @@ func Inject (rawBean reflect.Value, beanMap map[string]reflect.Value) {
 
 			parseTagNamedValue(fieldTag.Get("value"), rawBean.Field(i))
 			parseTagNamedAutowired(fieldTag.Get("autowired"), rawBean.Field(i))
-			parseInit(rawBean.Field(i))
 		}
 
 	}
-}
-
-func parseInit(field reflect.Value) {
-
-	defer func() {
-		if err := recover(); err != nil {
-		}
-	}()
-	field.Interface().(_interface.BeanInterface).Init()
 }
 
 func parseTagNamedValue(value string, field reflect.Value) {

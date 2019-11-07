@@ -9,6 +9,9 @@ type Config struct {
 		Enabled bool `value:"false"`
 		Dsn string
 	}
+	RpcServer struct{
+		Enabled bool `value:"false"`
+	}
 }
 
 type BeanParser struct {
