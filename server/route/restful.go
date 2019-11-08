@@ -11,8 +11,8 @@ type RestfulRoutesMap map[string]reflect.Value
 
 var RestfulRoutes = RestfulRoutesMap{}
 
-func (THIS RestfulRoutesMap) Init (httpServer *gin.Engine) {
-	for key, _ := range THIS {
+func (this RestfulRoutesMap) Init (httpServer *gin.Engine) {
+	for key, _ := range this {
 
 		resource := key
 

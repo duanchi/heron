@@ -12,8 +12,8 @@ type BaseRoutesMap map[string]reflect.Value
 
 var BaseRoutes = BaseRoutesMap{}
 
-func (THIS BaseRoutesMap) Init (httpServer *gin.Engine) {
-	for key, _ := range THIS {
+func (this BaseRoutesMap) Init (httpServer *gin.Engine) {
+	for key, _ := range this {
 
 		name := key
 
