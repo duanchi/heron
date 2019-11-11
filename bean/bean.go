@@ -3,6 +3,7 @@ package bean
 import (
 	"fmt"
 	_interface "heurd.com/wand-go/wand/interface"
+	"heurd.com/wand-go/wand/rpc"
 	"heurd.com/wand-go/wand/server/middleware"
 	"heurd.com/wand-go/wand/server/route"
 	"heurd.com/wand-go/wand/service"
@@ -13,11 +14,13 @@ import (
 var beanMaps = map[string]reflect.Value{}
 // var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
-var coreBeanParser = []interface{}{
+var coreBeanParser = []_interface.BeanParserInterface{
 	&service.ServiceBeanParser{},
 	&route.RouteBeanParser{},
 	&route.RestfulBeanParser{},
 	&middleware.MiddlewareBeanParser{},
+
+	&rpc.RpcBeanParser{},
 }
 
 type Container struct {}

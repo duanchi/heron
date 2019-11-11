@@ -9,8 +9,11 @@ type Config struct {
 		Enabled bool `value:"false"`
 		Dsn string
 	}
-	RpcServer struct{
-		Enabled bool `value:"false"`
+	Rpc struct {
+		Server struct{
+			Enabled bool `value:"false"`
+			Prefix string `value:""`
+		}
 	}
 }
 

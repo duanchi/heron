@@ -27,50 +27,50 @@ func parseTagNamedValue(value string, field reflect.Value) {
 	if value != "" {
 		regex, _ := regexp.Compile("^" + regexp.QuoteMeta("${") + "(.+)" + regexp.QuoteMeta("}") + "$")
 
-		value = string(regex.ReplaceAllFunc([]byte(value), func(match []byte) []byte {
-			return match[2:len(match) - 1]
-		})[:])
+		if regex.MatchString(value) {
+			value = string(regex.ReplaceAllFunc([]byte(value), func(match []byte) []byte {
+				return match[2:len(match) - 1]
+			})[:])
 
-		configField := strings.Split(value, ",")
-		configValue := config.GetRaw(configField[0])
+			configField := strings.Split(value, ",")
+			configValue := config.GetRaw(configField[0])
 
-		if configValue.IsZero() && len(configField) > 1 {
+			if configValue.IsZero() && len(configField) > 1 {
 
-			class := field.Kind()
+				class := field.Kind()
 
-			switch class {
-			case reflect.String:
-				configValue.SetString(configField[1])
+				switch class {
+				case reflect.String:
+					configValue.SetString(configField[1])
 
-			case reflect.Int, reflect.Int64:
-				value, err := strconv.ParseInt(configField[1], 10, 64)
-				if err != nil {
-					configValue.SetInt(0)
-				} else {
-					configValue.SetInt(value)
+				case reflect.Int, reflect.Int64:
+					value, err := strconv.ParseInt(configField[1], 10, 64)
+					if err != nil {
+						configValue.SetInt(0)
+					} else {
+						configValue.SetInt(value)
+					}
+
+				case reflect.Bool:
+					value, err := strconv.ParseBool(configField[1])
+					if err != nil {
+						configValue.SetBool(false)
+					} else {
+						configValue.SetBool(value)
+					}
+
+				case reflect.Float64:
+					value, err := strconv.ParseFloat(configField[1], 10)
+					if err != nil {
+						configValue.SetFloat(0)
+					} else {
+						configValue.SetFloat(value)
+					}
 				}
-
-			case reflect.Bool:
-				value, err := strconv.ParseBool(configField[1])
-				if err != nil {
-					configValue.SetBool(false)
-				} else {
-					configValue.SetBool(value)
-				}
-
-			case reflect.Float64:
-				value, err := strconv.ParseFloat(configField[1], 10)
-				if err != nil {
-					configValue.SetFloat(0)
-				} else {
-					configValue.SetFloat(value)
-				}
+			} else {
+				field.Set(configValue)
 			}
-		} else {
-			field.Set(configValue)
 		}
-
-
 	}
 }
 

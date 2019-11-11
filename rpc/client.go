@@ -1,10 +1,13 @@
 package rpc
 
-import "runtime"
+import (
+	"fmt"
+	"runtime"
+)
 
 func Call (in IN, out *OUT) error {
 	pc, _, _, _ := runtime.Caller(1)
 
-	runtime.FuncForPC(pc).Name()
+	fmt.Println(runtime.FuncForPC(pc).Name())
 	return nil
 }
