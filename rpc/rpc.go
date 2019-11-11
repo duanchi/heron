@@ -10,7 +10,10 @@ import (
 	"strings"
 )
 
-type RpcBeanMap map[string]reflect.Value
+type RpcBeanMap map[string]struct{
+	Package string
+	Instance reflect.Value
+}
 
 var RpcBeans = RpcBeanMap{}
 
@@ -26,7 +29,7 @@ func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 
 		if bean, ok := RpcBeans[beanName]; ok {
 
-			method := bean.MethodByName(methodName)
+			method := bean.Instance.MethodByName(methodName)
 
 			if method.IsValid() {
 

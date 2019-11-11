@@ -12,7 +12,7 @@ import (
 
 // var beanContainer interface{}
 var beanMaps = map[string]reflect.Value{}
-// var beanTypeMaps = map[reflect.Type]reflect.Value{}
+var beanNameMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
 var coreBeanParser = []_interface.BeanParserInterface{
 	&service.ServiceBeanParser{},
@@ -66,7 +66,7 @@ func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Typ
 }
 
 func Get (name string) interface{} {
-	return beanMaps[name].Interface()
+	return beanNameMaps[name].Interface()
 }
 
 func GetAll() map[string]reflect.Value {
@@ -81,6 +81,7 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 		name = beanDefinition.Name
 	}
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
+	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 
 	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type, name)
