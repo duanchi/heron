@@ -1,11 +1,12 @@
 package rpc
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"heurd.com/wand-go/wand/config"
+	_interface "heurd.com/wand-go/wand/interface"
 	"heurd.com/wand-go/wand/server/middleware"
 	"heurd.com/wand-go/wand/types"
+	"net/http"
 	"reflect"
 	"strings"
 )
@@ -21,6 +22,30 @@ func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 	prefix := config.Get("Rpc.Server.Prefix").(string)
 
 	httpServer.POST(prefix + "/*rpc_path", middleware.HandleAfterRoute, func(ctx *gin.Context) {
+
+		defer func() {
+			runtimeErr := recover()
+
+			errResponse := struct {
+				Message string
+				Code int
+			}{Code: 500}
+
+			if runtimeErr != nil {
+				if !reflect.TypeOf(runtimeErr).
+					Implements(
+						reflect.TypeOf(
+							(*_interface.Error)(nil)).
+							Elem()) {
+					errResponse.Message = runtimeErr.(error).Error()
+					ctx.JSON(http.StatusInternalServerError, errResponse)
+				} else {
+					errResponse.Message = runtimeErr.(types.RuntimeError).Error()
+					errResponse.Code = runtimeErr.(types.RuntimeError).Code()
+					ctx.JSON(runtimeErr.(_interface.Error).Code(), errResponse)
+				}
+			}
+		}()
 
 		pathStack := strings.SplitN(ctx.Request.URL.Path[len(prefix) + 1:], "::", 2)
 
@@ -45,8 +70,8 @@ func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 
 				if methodType.NumIn() != len(parameters) {
 					panic(types.RuntimeError{
-						Message:   `Malformed arguments in Method "#{methodName}" in Class "#{beanName}"`,
-						ErrorCode: 400,
+						Message:   "Malformed arguments in Method \"" + methodName + "\" in Class \"" + beanName + "\"",
+						ErrorCode: http.StatusBadRequest,
 					})
 				}
 
@@ -60,20 +85,18 @@ func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 					response = append(response, returns[i].Interface())
 				}
 
-				fmt.Println(response)
-
-				ctx.JSON(200, response)
+				ctx.JSON(http.StatusOK, response)
 
 			} else {
 				panic(types.RuntimeError{
-					Message:   `No implement of Method "#{methodName}" in Class "#{beanName}"`,
-					ErrorCode: 404,
+					Message:   "No implement of Method \"" + methodName + "\" in Class \"" + beanName + "\"",
+					ErrorCode: http.StatusBadRequest,
 				})
 			}
 		} else {
 			panic(types.RuntimeError{
-				Message:   `No implement of Class "#{beanName}"`,
-				ErrorCode: 404,
+				Message:   "No implement of Class \"" + beanName + "\"",
+				ErrorCode: http.StatusBadRequest,
 			})
 		}
 	})

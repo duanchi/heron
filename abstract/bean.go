@@ -1,15 +1,20 @@
 package abstract
 
+import (
+	_interface "heurd.com/wand-go/wand/interface"
+)
+
 type Bean struct {
-	name string
+	_interface.BeanInterface
+	BeanName string
 }
 
 func (this *Bean) Init () {}
 
-func (this *Bean) GetName () (name string) {
-	return this.name
+func (this *Bean) GetBeanName () (name string) {
+	return this.BeanName
 }
 
-func (this *Service) SetName (name string) {
-	this.name = name
+func (this *Bean) SetBeanName (name string) {
+	this.BeanName = name
 }

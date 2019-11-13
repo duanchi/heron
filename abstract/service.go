@@ -1,6 +1,9 @@
 package abstract
 
+import _interface "heurd.com/wand-go/wand/interface"
+
 type Service struct {
+	_interface.ServiceInterface
 	Bean
 }
 
@@ -9,9 +12,9 @@ func (this *Service) Init () {
 }
 
 func (this *Service) GetServiceName () (name string) {
-	return this.name
+	return this.BeanName
 }
 
 func (this *Service) SetServiceName (name string) {
-	this.name = name
+	this.BeanName = name
 }

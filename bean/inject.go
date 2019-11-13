@@ -25,6 +25,7 @@ func Inject (rawBean reflect.Value, beanMap map[string]reflect.Value) {
 
 func parseTagNamedValue(value string, field reflect.Value) {
 	if value != "" {
+		class := field.Kind()
 		regex, _ := regexp.Compile("^" + regexp.QuoteMeta("${") + "(.+)" + regexp.QuoteMeta("}") + "$")
 
 		if regex.MatchString(value) {
@@ -37,38 +38,66 @@ func parseTagNamedValue(value string, field reflect.Value) {
 
 			if configValue.IsZero() && len(configField) > 1 {
 
-				class := field.Kind()
-
 				switch class {
 				case reflect.String:
-					configValue.SetString(configField[1])
+					field.SetString(configField[1])
 
 				case reflect.Int, reflect.Int64:
 					value, err := strconv.ParseInt(configField[1], 10, 64)
 					if err != nil {
-						configValue.SetInt(0)
+						field.SetInt(0)
 					} else {
-						configValue.SetInt(value)
+						field.SetInt(value)
 					}
 
 				case reflect.Bool:
 					value, err := strconv.ParseBool(configField[1])
 					if err != nil {
-						configValue.SetBool(false)
+						field.SetBool(false)
 					} else {
-						configValue.SetBool(value)
+						field.SetBool(value)
 					}
 
 				case reflect.Float64:
 					value, err := strconv.ParseFloat(configField[1], 10)
 					if err != nil {
-						configValue.SetFloat(0)
+						field.SetFloat(0)
 					} else {
-						configValue.SetFloat(value)
+						field.SetFloat(value)
 					}
 				}
 			} else {
 				field.Set(configValue)
+			}
+		} else {
+
+			switch class {
+			case reflect.String:
+				field.SetString(value)
+
+			case reflect.Int, reflect.Int64:
+				value, err := strconv.ParseInt(value, 10, 64)
+				if err != nil {
+					field.SetInt(0)
+				} else {
+					field.SetInt(value)
+				}
+
+			case reflect.Bool:
+				value, err := strconv.ParseBool(value)
+				if err != nil {
+					field.SetBool(false)
+				} else {
+					field.SetBool(value)
+				}
+
+			case reflect.Float64:
+				value, err := strconv.ParseFloat(value, 10)
+				if err != nil {
+					field.SetFloat(0)
+				} else {
+					field.SetFloat(value)
+				}
 			}
 		}
 	}
