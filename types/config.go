@@ -1,19 +1,21 @@
 package types
 
-import "reflect"
+import (
+	"heurd.com/wand-go/wand/types/config"
+	"reflect"
+)
 
 type Config struct {
 	ServerPort string
 	BeanParsers []BeanParser
 	Db struct{
-		Enabled bool `value:"false"`
-		Dsn string
+		config.Db
+	}
+	Application struct{
+		config.Application
 	}
 	Rpc struct {
-		Server struct{
-			Enabled bool `value:"false"`
-			Prefix string `value:""`
-		}
+		config.Rpc
 	}
 }
 
