@@ -16,17 +16,20 @@ func (this RestfulRoutesMap) Init (httpServer *gin.Engine) {
 
 		resource := key
 
-		httpServer.Any("/" + resource + "/", func (ctx *gin.Context) {
-			ctx.Set("resource", resource)
-			ctx.Next()
-		}, middleware.HandleAfterRoute, func(ctx *gin.Context) {
+		handlers := []gin.HandlerFunc{
+			func (ctx *gin.Context) {
+				ctx.Set("resource", resource)
+				ctx.Next()
+			},
+		}
+
+		handlers = middleware.GetHandlersAfterRouterAppend(handlers)
+
+		handlers = append(handlers, func(ctx *gin.Context) {
 			handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
 		})
-		httpServer.Any("/" + resource + "/:id", func (ctx *gin.Context) {
-			ctx.Set("resource", resource)
-			ctx.Next()
-		}, middleware.HandleAfterRoute, func(ctx *gin.Context) {
-			handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
-		})
+
+		httpServer.Any("/" + resource + "/", handlers...)
+		httpServer.Any("/" + resource + "/:id", handlers...)
 	}
 }

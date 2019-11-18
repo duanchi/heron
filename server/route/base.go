@@ -30,14 +30,16 @@ func (this BaseRoutesMap) Init (httpServer *gin.Engine) {
 
 		for _, method := range methods {
 
+			handlers := middleware.GetHandlersAfterRouter()
+
+			handlers = append(handlers, func(ctx *gin.Context) {
+				handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
+			})
+
 			if method == "ALL" {
-				httpServer.Any(route, middleware.HandleAfterRoute, func(ctx *gin.Context) {
-					handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
-				})
+				httpServer.Any(route, handlers...)
 			} else {
-				httpServer.Handle(method, route, middleware.HandleAfterRoute, func(ctx *gin.Context) {
-					handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
-				})
+				httpServer.Handle(method, route, handlers...)
 			}
 		}
 	}
