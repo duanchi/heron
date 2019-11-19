@@ -2,7 +2,7 @@ package static
 
 import (
 	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/config"
+	"go.heurd.com/heron-go/heron/config"
 	"strings"
 )
 

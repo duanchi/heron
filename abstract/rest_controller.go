@@ -2,7 +2,7 @@ package abstract
 
 import (
 	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/types"
+	"go.heurd.com/heron-go/heron/types"
 )
 
 type RestController struct {

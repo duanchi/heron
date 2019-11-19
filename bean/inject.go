@@ -1,7 +1,7 @@
 package bean
 
 import (
-	"heurd.com/wand-go/wand/config"
+	"go.heurd.com/heron-go/heron/config"
 	"reflect"
 	"regexp"
 	"strconv"

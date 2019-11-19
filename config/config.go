@@ -1,7 +1,7 @@
 package config
 
 import (
-	"heurd.com/wand-go/wand/util"
+	"go.heurd.com/heron-go/heron/util"
 	"reflect"
 	"strconv"
 	"strings"

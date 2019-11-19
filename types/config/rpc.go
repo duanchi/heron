@@ -1,6 +1,6 @@
 package config
 
-import "heurd.com/wand-go/wand/types/config/rpc"
+import "go.heurd.com/heron-go/heron/types/config/rpc"
 
 type Rpc struct {
 	Server struct{

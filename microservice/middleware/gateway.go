@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/abstract"
-	"heurd.com/wand-go/wand/types/gateway"
+	"go.heurd.com/heron-go/heron/abstract"
+	"go.heurd.com/heron-go/heron/types/gateway"
 )
 
 type GatewayMiddleware struct {

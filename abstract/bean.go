@@ -1,7 +1,7 @@
 package abstract
 
 import (
-	_interface "heurd.com/wand-go/wand/interface"
+	_interface "go.heurd.com/heron-go/heron/interface"
 )
 
 type Bean struct {

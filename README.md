@@ -6,10 +6,10 @@ wand-go 目前支持本地`go mod`初始化
 
 ```
 require (
-	heurd.com/wand-go/wand v0.0.0
+	go.heurd.com/heron-go/heron v0.0.0
 )
 
-replace heurd.com/wand-go/wand => [path to gopath]/src/heurd.com/wand-go/wand
+replace go.heurd.com/heron-go/heron => [path to gopath]/src/go.heurd.com/heron-go/heron
 ```
 
 
@@ -18,12 +18,12 @@ replace heurd.com/wand-go/wand => [path to gopath]/src/heurd.com/wand-go/wand
 
 ### 自动初始化配置
 
-项目中所有的配置文件可以通过定义一个`struct`类型的变量实现, 该变量可以引用`heurd.com/wand-go/wand/types`下的`Config`结构体进行组合。
+项目中所有的配置文件可以通过定义一个`struct`类型的变量实现, 该变量可以引用`go.heurd.com/heron-go/heron/types`下的`Config`结构体进行组合。
 
 ```go
 package config
 
-import "heurd.com/wand-go/wand/types"
+import "go.heurd.com/heron-go/heron/types"
 
 var Config = struct {
 	types.Config

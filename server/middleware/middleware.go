@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	_interface "heurd.com/wand-go/wand/interface"
+	_interface "go.heurd.com/heron-go/heron/interface"
 	"reflect"
 )
 

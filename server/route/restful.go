@@ -2,8 +2,8 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/server/handler"
-	"heurd.com/wand-go/wand/server/middleware"
+	"go.heurd.com/heron-go/heron/server/handler"
+	"go.heurd.com/heron-go/heron/server/middleware"
 	"reflect"
 )
 

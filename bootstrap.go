@@ -1,10 +1,10 @@
-package wand
+package heron
 
 import (
-	"heurd.com/wand-go/wand/bean"
-	"heurd.com/wand-go/wand/config"
-	"heurd.com/wand-go/wand/db"
-	"heurd.com/wand-go/wand/server"
+	"go.heurd.com/heron-go/heron/bean"
+	"go.heurd.com/heron-go/heron/config"
+	"go.heurd.com/heron-go/heron/db"
+	"go.heurd.com/heron-go/heron/server"
 )
 
 func Bootstrap(configuration interface{}, beanConfiguration interface{}) {

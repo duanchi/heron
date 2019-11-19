@@ -1,8 +1,8 @@
 package service
 
 import (
-	_interface "heurd.com/wand-go/wand/interface"
-	"heurd.com/wand-go/wand/types"
+	_interface "go.heurd.com/heron-go/heron/interface"
+	"go.heurd.com/heron-go/heron/types"
 	"reflect"
 )
 

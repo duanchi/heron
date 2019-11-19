@@ -2,11 +2,11 @@ package bean
 
 import (
 	"fmt"
-	_interface "heurd.com/wand-go/wand/interface"
-	"heurd.com/wand-go/wand/rpc"
-	"heurd.com/wand-go/wand/server/middleware"
-	"heurd.com/wand-go/wand/server/route"
-	"heurd.com/wand-go/wand/service"
+	_interface "go.heurd.com/heron-go/heron/interface"
+	"go.heurd.com/heron-go/heron/rpc"
+	"go.heurd.com/heron-go/heron/server/middleware"
+	"go.heurd.com/heron-go/heron/server/route"
+	"go.heurd.com/heron-go/heron/service"
 	"reflect"
 )
 

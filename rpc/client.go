@@ -3,9 +3,9 @@ package rpc
 import (
 	"bytes"
 	"encoding/json"
-	_interface "heurd.com/wand-go/wand/interface"
-	"heurd.com/wand-go/wand/types"
-	"heurd.com/wand-go/wand/util"
+	_interface "go.heurd.com/heron-go/heron/interface"
+	"go.heurd.com/heron-go/heron/types"
+	"go.heurd.com/heron-go/heron/util"
 	"io/ioutil"
 	"net/http"
 	"reflect"

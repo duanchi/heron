@@ -1,7 +1,7 @@
 package route
 
 import (
-	"heurd.com/wand-go/wand/types"
+	"go.heurd.com/heron-go/heron/types"
 	"reflect"
 )
 

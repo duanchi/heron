@@ -1,4 +1,4 @@
-module heurd.com/wand-go/wand
+module go.heurd.com/heron-go/heron
 
 go 1.13
 

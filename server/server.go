@@ -2,10 +2,10 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/config"
-	"heurd.com/wand-go/wand/server/middleware"
-	"heurd.com/wand-go/wand/server/route"
-	"heurd.com/wand-go/wand/server/static"
+	"go.heurd.com/heron-go/heron/config"
+	"go.heurd.com/heron-go/heron/server/middleware"
+	"go.heurd.com/heron-go/heron/server/route"
+	"go.heurd.com/heron-go/heron/server/static"
 	"log"
 )
 
