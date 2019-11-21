@@ -2,9 +2,10 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"heurd.com/wand-go/wand/config"
-	"heurd.com/wand-go/wand/server/middleware"
-	"heurd.com/wand-go/wand/server/route"
+	"go.heurd.com/heron-go/heron/config"
+	"go.heurd.com/heron-go/heron/server/middleware"
+	"go.heurd.com/heron-go/heron/server/route"
+	"go.heurd.com/heron-go/heron/server/static"
 	"log"
 )
 
@@ -22,6 +23,8 @@ func Init () {
 	}
 
 	middleware.Init(HttpServer, middleware.BeforeRoute)
+
+	static.Init(HttpServer)
 
 	route.Init(HttpServer)
 

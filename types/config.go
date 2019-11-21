@@ -1,16 +1,21 @@
 package types
 
-import "reflect"
+import (
+	"go.heurd.com/heron-go/heron/types/config"
+	"reflect"
+)
 
 type Config struct {
 	ServerPort string
 	BeanParsers []BeanParser
 	Db struct{
-		Enabled bool `value:"false"`
-		Dsn string
+		config.Db
 	}
-	RpcServer struct{
-		Enabled bool `value:"false"`
+	Application struct{
+		config.Application
+	}
+	Rpc struct {
+		config.Rpc
 	}
 }
 

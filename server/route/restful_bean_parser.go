@@ -1,7 +1,7 @@
 package route
 
 import (
-	"heurd.com/wand-go/wand/types"
+	"go.heurd.com/heron-go/heron/types"
 	"reflect"
 )
 
@@ -9,7 +9,7 @@ type RestfulBeanParser struct {
 	types.BeanParser
 }
 
-func (parser RestfulBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {
+func (parser RestfulBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
 
 	resource := tag.Get("restful")
 

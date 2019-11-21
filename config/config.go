@@ -1,7 +1,7 @@
 package config
 
 import (
-	"heurd.com/wand-go/wand/util"
+	"go.heurd.com/heron-go/heron/util"
 	"reflect"
 	"strconv"
 	"strings"
@@ -51,45 +51,6 @@ func GetRaw(key string) reflect.Value {
 				}
 			}
 		}
-
-		/*if i < len(keyStack) - 1 && reflect.ValueOf(value).IsValid() && reflect.TypeOf(value).Kind() != reflect.Ptr && reflect.TypeOf(value).Kind() != reflect.Struct {
-			return nil
-		} else {
-			if reflect.TypeOf(value).Kind() == reflect.Struct {
-				if reflect.ValueOf(value).FieldByName(keyStack[i]).IsValid() {
-					value = reflect.ValueOf(value).FieldByName(keyStack[i]).Interface()
-				} else {
-					value = new(interface{})
-				}
-			} else if reflect.TypeOf(value).Kind() == reflect.Ptr {
-				if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsValid() {
-					value = reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).Interface()
-				} else {
-					value = struct{}{}
-				}
-
-			}else {
-				if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsZero() {
-					switch reflect.TypeOf(value).Kind() {
-					case reflect.Int, reflect.Int64:
-						value = 0
-
-					case reflect.String:
-						value = ""
-
-					case reflect.Float64:
-						value = 0
-
-					case reflect.Bool:
-						value = false
-					}
-				} else if reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).IsNil() {
-					value = nil
-				} else {
-					value = reflect.ValueOf(value).Elem().FieldByName(keyStack[i]).Interface()
-				}
-			}
-		}*/
 	}
 
 	return value

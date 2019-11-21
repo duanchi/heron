@@ -2,20 +2,25 @@ package bean
 
 import (
 	"fmt"
-	_interface "heurd.com/wand-go/wand/interface"
-	"heurd.com/wand-go/wand/server/middleware"
-	"heurd.com/wand-go/wand/server/route"
+	_interface "go.heurd.com/heron-go/heron/interface"
+	"go.heurd.com/heron-go/heron/rpc"
+	"go.heurd.com/heron-go/heron/server/middleware"
+	"go.heurd.com/heron-go/heron/server/route"
+	"go.heurd.com/heron-go/heron/service"
 	"reflect"
 )
 
 // var beanContainer interface{}
 var beanMaps = map[string]reflect.Value{}
-// var beanTypeMaps = map[reflect.Type]reflect.Value{}
+var beanNameMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
-var coreBeanParser = []interface{}{
+var coreBeanParser = []_interface.BeanParserInterface{
+	&service.ServiceBeanParser{},
 	&route.RouteBeanParser{},
 	&route.RestfulBeanParser{},
 	&middleware.MiddlewareBeanParser{},
+
+	&rpc.RpcBeanParser{},
 }
 
 type Container struct {}
@@ -61,7 +66,7 @@ func initBean(beanContainerInstance reflect.Value, beanContainerType reflect.Typ
 }
 
 func Get (name string) interface{} {
-	return beanMaps[name].Interface()
+	return beanNameMaps[name].Interface()
 }
 
 func GetAll() map[string]reflect.Value {
@@ -76,16 +81,17 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 		name = beanDefinition.Name
 	}
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
+	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 
-	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type)
+	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type, name)
 
 	fmt.Println("[Wand-Go] Init Bean: " + name)
 }
 
-func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type) {
+func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
 	for i := 0; i < len(coreBeanParser); i++ {
-		reflect.ValueOf(coreBeanParser[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition)
+		reflect.ValueOf(coreBeanParser[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
 	}
 }
 

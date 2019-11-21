@@ -6,4 +6,4 @@ type Router struct {
 	Bean
 }
 
-func (THIS *Router) Handle (path string, method string, params gin.Params, ctx *gin.Context) {}
+func (this *Router) Handle (path string, method string, params gin.Params, ctx *gin.Context) {}

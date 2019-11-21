@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
-	"heurd.com/wand-go/wand/config"
+	"go.heurd.com/heron-go/heron/config"
 	"log"
 	"net/url"
 	"strings"

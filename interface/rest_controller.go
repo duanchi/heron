@@ -1,7 +1,7 @@
 package _interface
 
 import (
-	"heurd.com/wand-go/wand/types"
+	"go.heurd.com/heron-go/heron/types"
 	"github.com/gin-gonic/gin"
 )
 

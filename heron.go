@@ -1,9 +1,9 @@
-package wand
+package heron
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
-	"heurd.com/wand-go/wand/bean"
+	"go.heurd.com/heron-go/heron/bean"
 )
 
 var HttpServer *gin.Engine
