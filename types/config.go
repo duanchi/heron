@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	ServerPort string
-	BeanParsers []BeanParser
+	BeanParsers []interface{}
 	Db struct{
 		config.Db
 	}
@@ -17,6 +17,13 @@ type Config struct {
 	Rpc struct {
 		config.Rpc
 	}
+}
+
+func (this *Config) GetName() (name string) {
+	return "Config"
+}
+func (this *Config) SetName(name string) {
+	return
 }
 
 type BeanParser struct {

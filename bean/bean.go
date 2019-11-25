@@ -14,7 +14,7 @@ import (
 var beanMaps = map[string]reflect.Value{}
 var beanNameMaps = map[string]reflect.Value{}
 var beanTypeMaps = map[reflect.Type]reflect.Value{}
-var coreBeanParser = []_interface.BeanParserInterface{
+var coreBeanParsers = []_interface.BeanParserInterface{
 	&service.ServiceBeanParser{},
 	&route.RouteBeanParser{},
 	&route.RestfulBeanParser{},
@@ -22,6 +22,8 @@ var coreBeanParser = []_interface.BeanParserInterface{
 
 	&rpc.RpcBeanParser{},
 }
+
+var customBeanParsers = []_interface.BeanParserInterface{}
 
 type Container struct {}
 
@@ -43,7 +45,8 @@ func (bean *Container) Get (name string) reflect.Value {
 	return value
 }
 
-func Init(beanContainerInstance interface{}) {
+func Init(beanContainerInstance interface{}, beanParsers []_interface.BeanParserInterface) {
+	customBeanParsers = beanParsers
 	containerValue := reflect.ValueOf(beanContainerInstance).Elem()
 	containerType := reflect.TypeOf(beanContainerInstance).Elem()
 	initBean(containerValue, containerType)
@@ -90,8 +93,12 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 }
 
 func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
-	for i := 0; i < len(coreBeanParser); i++ {
-		reflect.ValueOf(coreBeanParser[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
+	for i := 0; i < len(coreBeanParsers); i++ {
+		reflect.ValueOf(coreBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
+	}
+
+	for i := 0; i < len(customBeanParsers); i++ {
+		reflect.ValueOf(customBeanParsers[i]).Interface().(_interface.BeanParserInterface).Parse(tag, bean, definition, beanName)
 	}
 }
 
