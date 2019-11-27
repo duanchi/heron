@@ -25,11 +25,11 @@ func Bootstrap(configuration interface{}, beanConfiguration interface{}, beanPar
 	HttpServer = server.HttpServer
 }
 
-func BootstrapWithYaml(configuration interface{}, beanConfiguration interface{}) {
+func BootstrapWithYaml(configuration interface{}, beanConfiguration interface{}, beanParsers []_interface.BeanParserInterface) {
 	yconfig,_ := yconfig.GetYamlConfig()
 	config.SetconfigInstance(yconfig)
 
-	bean.Init(beanConfiguration)
+	bean.Init(beanConfiguration, beanParsers)
 
 	if config.Get("Db.Enabled").(string) == "true" {
 		db.Init()
