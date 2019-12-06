@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -58,15 +59,17 @@ func parseConfig (config interface{}) {
 					parseConfig(configValue.Field(i).Index(j).Addr().Interface())
 				}
 			} else {
+				v := ""
 				defaultValue := configType.Field(i).Tag.Get("default")
 				yamlValue := configValue.Field(i).String()
 				//未配置则取默认值
 				if yamlValue == "" && defaultValue != "" {
-					configValue.Field(i).SetString(defaultValue)
+					// configValue.Field(i).SetString(defaultValue)
+					v = defaultValue
 				}
 				envValue := ""
 				envKey := ""
-				value := ""
+				envDefaultValue := ""
 				if strings.Index(yamlValue, "$") != -1 {
 					start := strings.Index(yamlValue, "{")
 					end := strings.LastIndex(yamlValue, "}")
@@ -74,7 +77,7 @@ func parseConfig (config interface{}) {
 					index := strings.Index(elContent, ":")
 					if index != -1 {
 						envKey = elContent[1:index]
-						value = elContent[index+1:]
+						envDefaultValue = elContent[index+1:]
 					} else {//不存在配置值
 						envKey = elContent[1:]
 					}
@@ -85,11 +88,43 @@ func parseConfig (config interface{}) {
 					}
 					//fmt.Println(envKey + ": " + envValue)
 					//环境变量不存在则获取缺省值
-					if envValue == "" && value != "" {
-						envValue = value
+					if envValue == "" && envDefaultValue != "" {
+						envValue = envDefaultValue
 					}
 					if envValue != "" {
-						configValue.Field(i).SetString(envValue)
+						// configValue.Field(i).SetString(envValue)
+						v = envValue
+					}
+				}
+
+
+				class := configType.Field(i).Type.Kind()
+				switch class {
+				case reflect.String:
+					configValue.Field(i).SetString(v)
+
+				case reflect.Int, reflect.Int64:
+					value, err := strconv.ParseInt(v, 10, 64)
+					if err != nil {
+						configValue.Field(i).SetInt(0)
+					} else {
+						configValue.Field(i).SetInt(value)
+					}
+
+				case reflect.Bool:
+					value, err := strconv.ParseBool(v)
+					if err != nil {
+						configValue.Field(i).SetBool(false)
+					} else {
+						configValue.Field(i).SetBool(value)
+					}
+
+				case reflect.Float64:
+					value, err := strconv.ParseFloat(v, 10)
+					if err != nil {
+						configValue.Field(i).SetFloat(0)
+					} else {
+						configValue.Field(i).SetFloat(value)
 					}
 				}
 			}

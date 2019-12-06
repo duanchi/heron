@@ -9,7 +9,7 @@ import (
 func Init(httpServer *gin.Engine) {
 	BaseRoutes.Init(httpServer)
 	RestfulRoutes.Init(httpServer)
-	if config.Get("Rpc.Server.Enabled").(string) == "true" {
+	if config.Get("Rpc.Server.Enabled").(bool) == true {
 		rpc.RpcBeans.Init(httpServer)
 	}
 }

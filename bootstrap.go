@@ -16,7 +16,7 @@ func Bootstrap(configuration interface{}, beanConfiguration interface{}, beanPar
 
 	bean.Init(beanConfiguration, beanParsers)
 
-	if config.Get("Db.Enabled").(string) == "true" {
+	if config.Get("Db.Enabled").(bool) == true {
 		db.Init()
 		Db = db.Connection
 	}
@@ -25,13 +25,13 @@ func Bootstrap(configuration interface{}, beanConfiguration interface{}, beanPar
 	HttpServer = server.HttpServer
 }
 
-func BootstrapWithYaml(configuration interface{}, beanConfiguration interface{}, beanParsers []_interface.BeanParserInterface) {
-	yconfig,_ := yconfig.GetYamlConfig()
+func BootstrapWithYaml(configurationFile string, beanConfiguration interface{}, beanParsers []_interface.BeanParserInterface) {
+	yconfig,_ := yconfig.GetYamlConfig(configurationFile)
 	config.SetconfigInstance(yconfig)
 
 	bean.Init(beanConfiguration, beanParsers)
 
-	if config.Get("Db.Enabled").(string) == "true" {
+	if config.Get("Db.Enabled").(bool) == true {
 		db.Init()
 		Db = db.Connection
 	}

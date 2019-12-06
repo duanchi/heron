@@ -8,22 +8,23 @@ import (
 
 var configInstance interface{}
 
-const configFile = "resource/application.yaml"
+var configFile = "./config/application.yaml"
 
 func GetMapConfig()(conf map[string]interface{}, err error){
 	configFile := readFile()
 	conf = make(map[string]interface{})
 	err = yaml.Unmarshal(configFile, conf)
-	if(err != nil ){
+	if err != nil {
 		log.Println(err)
 	}
 	return
 }
 
-func GetYamlConfig()(conf *Config, err error){
-	configFile := readFile()
-	err = yaml.Unmarshal(configFile, &conf)
-	if(err != nil ){
+func GetYamlConfig(config string)(conf *Config, err error){
+	configFile = config
+	configYaml := readFile()
+	err = yaml.Unmarshal(configYaml, &conf)
+	if err != nil {
 		log.Println(err)
 		panic(err.Error())
 	} else {

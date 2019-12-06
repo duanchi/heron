@@ -10,8 +10,8 @@ type Config struct {
 }
 
 type Db struct{
-Enabled string  `yaml:"enabled" default:"false"`
-Dsn string      `yaml:"dsn"`
+	Enabled bool  `yaml:"enabled" default:"false"`
+	Dsn string      `yaml:"dsn"`
 }
 
 type Rpc struct{
@@ -19,7 +19,7 @@ type Rpc struct{
 }
 
 type Server struct {
-	Enabled string `yaml:"enabled" default:"false"`
+	Enabled bool `yaml:"enabled" default:"false"`
 	Prefix string `yaml:"prefix"`
 }
 
