@@ -4,6 +4,6 @@ import "go.heurd.com/heron-go/heron/types/config/rpc"
 
 type Rpc struct {
 	Server struct{
-		rpc.Server
-	}
+		rpc.Server `yaml:",inline"`
+	} `yaml:"server"`
 }

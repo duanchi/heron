@@ -1,35 +1,15 @@
-package config
+package yaml
 
 import (
-	"go.heurd.com/heron-go/heron/config/yaml"
-	"go.heurd.com/heron-go/heron/util"
+	"log"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
-var configInstance interface{}
 
-func SetconfigInstance(v interface{}){
-	configInstance = v
-}
-
-func Init(config interface{}) {
-
-	_, err := yaml.GetYamlConfig(config)
-
-	if err != nil {
-		parseConfig(config)
-	}
-
-	configInstance = config
-}
-
-func Get(key string) interface{} {
-	return GetRaw(key).Interface()
-}
-
-func GetRaw(key string) reflect.Value {
+func getRaw(key string) reflect.Value {
 
 	keyStack := strings.Split(key, ".")
 	value := reflect.ValueOf(configInstance).Elem()
@@ -68,33 +48,57 @@ func GetRaw(key string) reflect.Value {
 }
 
 func parseConfig (config interface{}) {
-
 	configType := reflect.TypeOf(config).Elem()
 	configValue := reflect.ValueOf(config).Elem()
-
 	for i := 0; i < configValue.NumField(); i++ {
 		if configValue.Field(i).CanInterface() && configValue.Field(i).CanSet() {
 			if configValue.Field(i).Kind() == reflect.Struct {
 				parseConfig(configValue.Field(i).Addr().Interface())
+			} else if configValue.Field(i).Kind() == reflect.Slice {
+				for j:=0; j < configValue.Field(i).Len(); j++ {
+					parseConfig(configValue.Field(i).Index(j).Addr().Interface())
+				}
 			} else {
 				v := ""
-				if configType.Field(i).Tag.Get("env") != "" {
-					value := strings.Split(configType.Field(i).Tag.Get("env"), ",")
-					if value[0] != "" {
-						if len(value) > 1 {
-							v = util.Getenv(value[0], value[0])
-						} else {
-							v = util.Getenv(value[0], "")
-						}
-
-					} else {
-						v = ""
+				defaultValue := configType.Field(i).Tag.Get("default")
+				yamlValue := configValue.Field(i).String()
+				//未配置则取默认值
+				if yamlValue == "" && defaultValue != "" {
+					// configValue.Field(i).SetString(defaultValue)
+					v = defaultValue
+				} else {
+					v = yamlValue
+				}
+				envValue := ""
+				envKey := ""
+				envDefaultValue := ""
+				if strings.Index(yamlValue, "$") != -1 {
+					start := strings.Index(yamlValue, "{")
+					end := strings.LastIndex(yamlValue, "}")
+					elContent := yamlValue[start:end]
+					index := strings.Index(elContent, ":")
+					if index != -1 {
+						envKey = elContent[1:index]
+						envDefaultValue = elContent[index+1:]
+					} else {//不存在配置值
+						envKey = elContent[1:]
 					}
 
+					envValue = os.Getenv(envKey)
+					if envValue != "" {
+						log.Println(envKey + ": " + envValue)
+					}
+					//fmt.Println(envKey + ": " + envValue)
+					//环境变量不存在则获取缺省值
+					if envValue == "" && envDefaultValue != "" {
+						envValue = envDefaultValue
+					}
+					if envValue != "" {
+						// configValue.Field(i).SetString(envValue)
+						v = yamlValue[0:start - 1] + envValue + yamlValue[end:len(yamlValue) - 1]
+					}
 				}
-				if v == "" && configType.Field(i).Tag.Get("value") != "" {
-					v = configType.Field(i).Tag.Get("value")
-				}
+
 
 				class := configType.Field(i).Type.Kind()
 				switch class {

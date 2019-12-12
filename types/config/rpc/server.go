@@ -1,6 +1,6 @@
 package rpc
 
 type Server struct {
-	Enabled bool `value:"false"`
-	Prefix string `value:""`
+	Enabled bool `yaml:"enabled" value:"false"`
+	Prefix string `yaml:"prefix" value:""`
 }

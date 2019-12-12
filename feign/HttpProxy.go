@@ -12,6 +12,7 @@ type HttpProxy struct {
 func (p *HttpProxy)Invoke(proxy *reflec.Proxy, method *reflec.Method, args []interface{})(error){
 	serviceName := args[0].(string)
 	service := services[serviceName]
+
 	if service.Debug == "true" {
 		log.Println("----rpc begin----")
 	}

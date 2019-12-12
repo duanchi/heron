@@ -66,6 +66,8 @@ func parseConfig (config interface{}) {
 				if yamlValue == "" && defaultValue != "" {
 					// configValue.Field(i).SetString(defaultValue)
 					v = defaultValue
+				} else {
+					v = yamlValue
 				}
 				envValue := ""
 				envKey := ""
@@ -93,7 +95,7 @@ func parseConfig (config interface{}) {
 					}
 					if envValue != "" {
 						// configValue.Field(i).SetString(envValue)
-						v = envValue
+						v = yamlValue[0:start - 1] + envValue + yamlValue[end:len(yamlValue) - 1]
 					}
 				}
 

@@ -6,17 +6,19 @@ import (
 )
 
 type Config struct {
-	ServerPort string
 	BeanParsers []interface{}
 	Db struct{
-		config.Db
-	}
+		config.Db `yaml:",inline"`
+	} `yaml:"db"`
 	Application struct{
-		config.Application
-	}
+		config.Application `yaml:",inline"`
+	} `yaml:"application"`
 	Rpc struct {
-		config.Rpc
-	}
+		config.Rpc `yaml:",inline"`
+	} `yaml:"rpc"`
+	Feign struct{
+		config.Feign `yaml:",inline"`
+	} `yaml:"feign"`
 }
 
 func (this *Config) GetName() (name string) {

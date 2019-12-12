@@ -1,6 +1,6 @@
 package config
 
 type Db struct {
-	Enabled bool `value:"false"`
-	Dsn string
+	Enabled bool `yaml:"enabled" value:"false"`
+	Dsn string	`yaml:"dsn"`
 }
