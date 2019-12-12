@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	"reflect"
 )
 
 var configInstance interface{}
@@ -22,23 +21,24 @@ func GetMapConfig()(conf map[string]interface{}, err error){
 	return
 }
 
-func GetYamlConfig(config interface{})(conf interface{}, err error){
+func GetYamlConfig(config interface{})(configMap map[interface{}]interface{}, err error){
 	configYaml, err := readFile()
 	if err != nil {
 		return
 	}
-	configuration := reflect.New(reflect.TypeOf(config).Elem())
-	err = yaml.Unmarshal(configYaml, configuration)
-	fmt.Println(configuration)
+	configMap = make(map[interface{}]interface{})
+	err = yaml.Unmarshal(configYaml, config)
+	fmt.Printf("%+v", config)
+	return
 	if err != nil {
 		log.Println(err)
 		panic(err.Error())
 	} else {
 		// fmt.Printf("读取配置文件: %+v\n", conf)
-		parseConfig(config)
-		fmt.Printf("%+v", config)
+		parseConfig(config, configMap)
 		// fmt.Printf("更新配置参数: %+v\n", conf)
-		conf = config
+
+		fmt.Printf("%+v", config)
 	}
 	// configInstance = conf
 	return

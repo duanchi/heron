@@ -14,7 +14,7 @@ func Bootstrap(configuration interface{}, beanConfiguration interface{}, beanPar
 	config.Init(configuration)
 	Config = configuration
 
-	bean.Init(beanConfiguration, beanParsers)
+	/*bean.Init(beanConfiguration, beanParsers)
 
 	if config.Get("Db.Enabled").(bool) == true {
 		db.Init()
@@ -22,7 +22,7 @@ func Bootstrap(configuration interface{}, beanConfiguration interface{}, beanPar
 	}
 
 	server.Init()
-	HttpServer = server.HttpServer
+	HttpServer = server.HttpServer*/
 }
 
 func BootstrapWithYaml(configurationFile string, beanConfiguration interface{}, beanParsers []_interface.BeanParserInterface) {

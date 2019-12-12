@@ -7,18 +7,10 @@ import (
 
 type Config struct {
 	BeanParsers []interface{}
-	Db struct{
-		config.Db `yaml:",inline"`
-	} `yaml:"db"`
-	Application struct{
-		config.Application `yaml:",inline"`
-	} `yaml:"application"`
-	Rpc struct {
-		config.Rpc `yaml:",inline"`
-	} `yaml:"rpc"`
-	Feign struct{
-		config.Feign `yaml:",inline"`
-	} `yaml:"feign"`
+	Db			config.Db `yaml:"db"`
+	Application config.Application `yaml:"application"`
+	Rpc 		config.Rpc `yaml:"rpc"`
+	Feign		config.Feign `yaml:"feign"`
 }
 
 func (this *Config) GetName() (name string) {

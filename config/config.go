@@ -8,21 +8,20 @@ import (
 	"strings"
 )
 
-var configInstance interface{}
+var ConfigInstance interface{}
 
 func SetconfigInstance(v interface{}){
-	configInstance = v
+	ConfigInstance = v
 }
 
 func Init(config interface{}) {
+	yaml.GetYamlConfig(config)
 
-	_, err := yaml.GetYamlConfig(config)
+		/*if err != nil {
+			parseConfig(config)
+		}*/
 
-	if err != nil {
-		parseConfig(config)
-	}
-
-	configInstance = config
+	ConfigInstance = config
 }
 
 func Get(key string) interface{} {
@@ -32,7 +31,7 @@ func Get(key string) interface{} {
 func GetRaw(key string) reflect.Value {
 
 	keyStack := strings.Split(key, ".")
-	value := reflect.ValueOf(configInstance).Elem()
+	value := reflect.ValueOf(ConfigInstance).Elem()
 
 	for i := 0; i < len(keyStack); i++ {
 
