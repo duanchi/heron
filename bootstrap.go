@@ -5,38 +5,22 @@ import (
 	"go.heurd.com/heron-go/heron/config"
 	"go.heurd.com/heron-go/heron/db"
 	"go.heurd.com/heron-go/heron/feign"
-	_interface "go.heurd.com/heron-go/heron/interface"
 	"go.heurd.com/heron-go/heron/server"
-	"go.heurd.com/heron-go/heron/yconfig"
+	config2 "go.heurd.com/heron-go/heron/types/config"
 )
 
-func Bootstrap(configuration interface{}, beanConfiguration interface{}, beanParsers []_interface.BeanParserInterface) {
+func Bootstrap(configuration interface{}) {
 	config.Init(configuration)
 	Config = configuration
 
-	/*bean.Init(beanConfiguration, beanParsers)
+	bean.Init(config.Get("Beans"), config.Get("BeanParsers"))
 
 	if config.Get("Db.Enabled").(bool) == true {
 		db.Init()
 		Db = db.Connection
 	}
 
-	server.Init()
-	HttpServer = server.HttpServer*/
-}
-
-func BootstrapWithYaml(configurationFile string, beanConfiguration interface{}, beanParsers []_interface.BeanParserInterface) {
-	yconfig,_ := yconfig.GetYamlConfig(configurationFile)
-	config.SetconfigInstance(yconfig)
-
-	bean.Init(beanConfiguration, beanParsers)
-
-	if config.Get("Db.Enabled").(bool) == true {
-		db.Init()
-		Db = db.Connection
-	}
-
-	feign.Init(yconfig.Feign)
+	feign.Init(config.Get("Feign").(config2.Feign))
 
 	server.Init()
 	HttpServer = server.HttpServer

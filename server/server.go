@@ -9,7 +9,6 @@ import (
 	"log"
 )
 
-// var DB *xorm.Engine
 var HttpServer *gin.Engine
 
 func Init () {

@@ -1,13 +1,6 @@
 package yaml
 
-import (
-	"fmt"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"log"
-)
-
-var configInstance interface{}
+/*var configInstance interface{}
 
 var configFile = "./config/application.yaml"
 
@@ -50,7 +43,7 @@ func readFile() (config []byte, err error){
 		log.Fatalf("yamlFile.Get err %v ", err)
 	}
 	return
-}
+}*/
 
 func Get(key string) interface{} {
 	return getRaw(key).Interface()

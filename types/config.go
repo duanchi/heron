@@ -6,11 +6,14 @@ import (
 )
 
 type Config struct {
-	BeanParsers []interface{}
+	Env			string `yaml:"env" default:"development"`
 	Db			config.Db `yaml:"db"`
 	Application config.Application `yaml:"application"`
 	Rpc 		config.Rpc `yaml:"rpc"`
 	Feign		config.Feign `yaml:"feign"`
+
+	BeanParsers interface{} `yaml:"-"`
+	Beans		struct {} `yaml:"-"`
 }
 
 func (this *Config) GetName() (name string) {

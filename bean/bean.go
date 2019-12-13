@@ -45,10 +45,17 @@ func (bean *Container) Get (name string) reflect.Value {
 	return value
 }
 
-func Init(beanContainerInstance interface{}, beanParsers []_interface.BeanParserInterface) {
-	customBeanParsers = beanParsers
-	containerValue := reflect.ValueOf(beanContainerInstance).Elem()
-	containerType := reflect.TypeOf(beanContainerInstance).Elem()
+func Init(beanContainerInstance interface{}, beanParsers interface{}) {
+
+	customBeanParsers = beanParsers.([]_interface.BeanParserInterface)
+	containerValue := reflect.ValueOf(beanContainerInstance)
+	containerType := reflect.TypeOf(beanContainerInstance)
+
+	if reflect.TypeOf(beanContainerInstance).Kind() == reflect.Ptr {
+		containerValue = reflect.ValueOf(beanContainerInstance).Elem()
+		containerType = reflect.TypeOf(beanContainerInstance).Elem()
+	}
+
 	initBean(containerValue, containerType)
 }
 

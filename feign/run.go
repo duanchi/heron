@@ -1,18 +1,18 @@
 package feign
 
 import (
-	"go.heurd.com/heron-go/heron/yconfig"
 	"go.heurd.com/heron-go/heron/feign/reflec"
+	"go.heurd.com/heron-go/heron/types/config"
 )
 var services = make(map[string]*ServiceToken)
 var Engin *reflec.Proxy
 var delimiter = ":"
-func Init(feignConf yconfig.Feign){
+func Init(feignConf config.Feign){
 	hc := &httpClient{}
 	hp := new(HttpProxy)
 	Engin = reflec.New(hc, hp)
-	for _,serviceConf := range feignConf.Service{
-		if serviceConf.Enabled == "true" && serviceConf.Path != "" {
+	for _,serviceConf := range feignConf.Services{
+		if serviceConf.Enabled == true && serviceConf.Path != "" {
 			service := new(ServiceToken)
 			service.Url = serviceConf.Url
 			service.TokenHeader = serviceConf.TokenHeader

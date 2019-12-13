@@ -1,48 +1,43 @@
 package yaml
 
-type Config struct {
-	//ServerPort  string       `yaml:"serverPort"`
-	Db  Db                   `yaml:"db"`
-	Rpc  Rpc                 `yaml:"rpc"`
-	Env string               `yaml:"env" default:"development"`
-	Feign      Feign 		 `yaml:"feign"`
-	Application  Application `yaml:"application"`
+import (
+	"go.heurd.com/heron-go/heron/util"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"log"
+	"regexp"
+	"strings"
+)
+
+var configInstance interface{}
+
+var configFile = "./config/application.yaml"
+
+func GetConfig(config interface{}) (err error){
+	configYaml, err := readFile()
+	if err != nil {
+		return
+	}
+
+	pattern, _ := regexp.Compile(`\${.+?}`)
+	configYaml = pattern.ReplaceAllFunc(configYaml, func(b []byte) []byte {
+		s := string(b)
+		value := strings.SplitN(s[2:len(s) - 1], ":", 2)
+		if len(value) > 1 {
+			return []byte(util.Getenv(value[0], value[1]))
+		} else {
+			return []byte(util.Getenv(value[0], ""))
+		}
+	})
+
+	err = yaml.Unmarshal(configYaml, config)
+	return
 }
 
-type Db struct{
-	Enabled bool  `yaml:"enabled" default:"false"`
-	Dsn string      `yaml:"dsn"`
-}
-
-type Rpc struct{
-	Server Server `yaml:"server"`
-}
-
-type Server struct {
-	Enabled bool `yaml:"enabled" default:"false"`
-	Prefix string `yaml:"prefix"`
-}
-
-type Feign struct {
-	Service  []Service `yaml:"service"`
-	Debug    string `yaml:"debug" default:"none"`
-}
-
-type Service struct {
-	Name           string `yaml:"name"`
-	Url            string `yaml:"url"`
-	Enabled        string `yaml:"enabled" default:"true"`
-	Path       	   string `yaml:"path"`
-	Username       string `yaml:"username"`
-	Password       string `yaml:"password"`
-	TokenKey       string `yaml:"token_key" default:"token"`
-	TokenHeader    string `yaml:"token_header" default:"X-Authorization:Bearer"`
-	Interval       string `yaml:"interval" default:"3600"`
-}
-
-type Application struct {
-	ServerPort string       `yaml:"serverPort" default:"9080"`
-	JwtSignatureKey string  `yaml:"jwtSignatureKey"`
-	JwtExpireIn  string      `yaml:"jwtExpireIn" default:"7200"`
-	StaticPath  string       `yaml:"staticPath"`
+func readFile() (config []byte, err error){
+	config, err = ioutil.ReadFile(configFile)
+	if err != nil {
+		log.Fatalf("yamlFile.Get err %v ", err)
+	}
+	return
 }
