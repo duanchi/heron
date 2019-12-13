@@ -6,17 +6,14 @@ import (
 )
 
 type Config struct {
-	ServerPort string
-	BeanParsers []interface{}
-	Db struct{
-		config.Db
-	}
-	Application struct{
-		config.Application
-	}
-	Rpc struct {
-		config.Rpc
-	}
+	Env			string `yaml:"env" default:"development"`
+	Db			config.Db `yaml:"db"`
+	Application config.Application `yaml:"application"`
+	Rpc 		config.Rpc `yaml:"rpc"`
+	Feign		config.Feign `yaml:"feign"`
+
+	BeanParsers interface{} `yaml:"-"`
+	Beans		struct {} `yaml:"-"`
 }
 
 func (this *Config) GetName() (name string) {

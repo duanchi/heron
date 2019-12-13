@@ -1,6 +1,7 @@
-package yconfig
+package yaml
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"reflect"
@@ -47,17 +48,46 @@ func getRaw(key string) reflect.Value {
 	return value
 }
 
-func parseConfig (config interface{}) {
+func parseConfig (config interface{}, configMap interface{}) {
 	configType := reflect.TypeOf(config).Elem()
 	configValue := reflect.ValueOf(config).Elem()
+	configRaw := reflect.ValueOf(configMap)
 	for i := 0; i < configValue.NumField(); i++ {
+		configKey := configType.Field(i).Tag.Get("yaml")
+		if configKey == "" {
+			configKey = configType.Field(i).Name
+		}
 		if configValue.Field(i).CanInterface() && configValue.Field(i).CanSet() {
 			if configValue.Field(i).Kind() == reflect.Struct {
-				parseConfig(configValue.Field(i).Addr().Interface())
-			} else if configValue.Field(i).Kind() == reflect.Slice {
-				for j:=0; j < configValue.Field(i).Len(); j++ {
-					parseConfig(configValue.Field(i).Index(j).Addr().Interface())
+				if configRaw.IsValid() {
+					if configKey == ",inline" {
+						parseConfig(configValue.Field(i).Addr().Interface(),  configRaw.Interface())
+					} else {
+						if configRaw.MapIndex(reflect.ValueOf(configKey)).IsValid() {
+							parseConfig(configValue.Field(i).Addr().Interface(), configRaw.MapIndex(reflect.ValueOf(configKey)).Interface())
+						} else {
+							parseConfig(configValue.Field(i).Addr().Interface(),  nil)
+						}
+					}
+				} else {
+					parseConfig(configValue.Field(i).Addr().Interface(),  nil)
 				}
+
+
+			} else if configValue.Field(i).Kind() == reflect.Slice {
+				fmt.Println(configType.Field(i).Type)
+				fmt.Println(configRaw.Kind())
+				if configRaw.Kind() == reflect.Slice || configRaw.Kind() == reflect.Map {
+
+					for j:=0; j < configRaw.Len(); j++ {
+						// reflect.Append(configValue.Field(i), reflect.New(configType.Field(i).Type.))
+						parseConfig(configValue.Field(i).Index(j).Addr().Interface(), configRaw.Index(i))
+						// parseConfig(configValue.Field(i).Index(j).Addr().Interface(), configRaw.Index(i))
+					}
+
+					fmt.Printf("len - %d", configValue.Field(i).Len())
+				}
+
 			} else {
 				v := ""
 				defaultValue := configType.Field(i).Tag.Get("default")

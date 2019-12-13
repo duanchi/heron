@@ -1,14 +1,13 @@
 package feign
 
 import (
-	"go.heurd.com/heron-go/heron/yconfig"
+	"go.heurd.com/heron-go/heron/types/config/feign"
 	"log"
-	"strconv"
 	"strings"
 	"time"
 )
 
-func refreshToken(serviceConf yconfig.Service, service *ServiceToken, debug string){
+func refreshToken(serviceConf feign.Service, service *ServiceToken, debug string){
 	for ; ; {
 		reqBody := make(map[string]string)
 		userName := strings.Split(serviceConf.Username,delimiter)
@@ -18,7 +17,7 @@ func refreshToken(serviceConf yconfig.Service, service *ServiceToken, debug stri
 		respBody := make(map[string]string)
 
 		err := Engin.Post(serviceConf.Name, serviceConf.Path, reqBody,&respBody)
-		if(err != nil){
+		if err != nil {
 			log.Printf("Get [%s] Token Error, Error: %s\n", serviceConf.Name, err)
 		} else {
 			token := respBody[serviceConf.TokenKey]
@@ -28,11 +27,10 @@ func refreshToken(serviceConf yconfig.Service, service *ServiceToken, debug stri
 			}
 			service.Token = token
 		}
-		interval,err := strconv.Atoi(serviceConf.Interval)
-		if(err != nil ){
+		if err != nil {
 			panic("rpc token 更新间隔参数[interval]格式设置错误，必须为正整数")
 		}
-		time.Sleep(time.Second * time.Duration(interval))
+		time.Sleep(time.Second * time.Duration(serviceConf.Interval))
 	}
 }
 
