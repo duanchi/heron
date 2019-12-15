@@ -10,7 +10,7 @@ func RouteHandle(path string, handle reflect.Value, ctx *gin.Context, engine *gi
 	params := ctx.Params
 	method := ctx.Request.Method
 
-	handle.Interface().(_interface.RouterInterface).Handle(path, method, params, ctx)
+	handle.Interface().(_interface.RouterInterface).Handle(ctx.Request.URL.Path, method, params, ctx)
 
 	return
 }
