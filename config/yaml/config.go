@@ -41,3 +41,7 @@ func readFile() (config []byte, err error){
 	}
 	return
 }
+
+func SetConfigFile (config string) {
+	configFile = config
+}

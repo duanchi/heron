@@ -27,7 +27,13 @@ func Get(key string) interface{} {
 func GetRaw(key string) reflect.Value {
 
 	keyStack := strings.Split(key, ".")
-	value := reflect.ValueOf(ConfigInstance).Elem()
+	value := reflect.ValueOf(ConfigInstance)
+
+	if value.IsValid() {
+		value = value.Elem()
+	} else {
+		return value
+	}
 
 	for i := 0; i < len(keyStack); i++ {
 
@@ -60,6 +66,10 @@ func GetRaw(key string) reflect.Value {
 	}
 
 	return value
+}
+
+func SetConfigFile (configFile string) {
+	yaml.SetConfigFile(configFile)
 }
 
 func parseConfig (config interface{}, defaults string) {

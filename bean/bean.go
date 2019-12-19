@@ -47,7 +47,10 @@ func (bean *Container) Get (name string) reflect.Value {
 
 func Init(beanContainerInstance interface{}, beanParsers interface{}) {
 
-	customBeanParsers = beanParsers.([]_interface.BeanParserInterface)
+	if reflect.ValueOf(beanParsers).IsValid() {
+		customBeanParsers = beanParsers.([]_interface.BeanParserInterface)
+	}
+
 	containerValue := reflect.ValueOf(beanContainerInstance)
 	containerType := reflect.TypeOf(beanContainerInstance)
 
