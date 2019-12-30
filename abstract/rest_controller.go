@@ -2,6 +2,7 @@ package abstract
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"go.heurd.com/heron-go/heron/types"
 )
 
@@ -23,4 +24,8 @@ func (this *RestController) Update (id string, resource string, parameters *gin.
 
 func (this *RestController) Remove (id string, resource string, parameters *gin.Params, ctx *gin.Context) (result interface{}, err types.Error) {
 	return "error", nil
+}
+
+func (this *RestController) Communicate (connection *websocket.Conn, id string, resource string, parameters *gin.Params, ctx *gin.Context) (err types.Error) {
+	return nil
 }

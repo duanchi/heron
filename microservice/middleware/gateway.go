@@ -16,7 +16,14 @@ func (this *GatewayMiddleware) AfterRoute (ctx *gin.Context) {
 
 	data := gateway.Data{}
 
-	if decodeData, ok := base64.URLEncoding.DecodeString(ctx.Request.Header.Get("X-Gateway-Data")); ok == nil {
+
+	gatewayData := ctx.Request.Header.Get("X-Gateway-Data")
+
+	if gatewayData == "" && ctx.Query("__X-GATEWAY-DATA__") != "" {
+		gatewayData = ctx.Query("__X-GATEWAY-DATA__")
+	}
+
+	if decodeData, ok := base64.URLEncoding.DecodeString(gatewayData); ok == nil {
 		json.Unmarshal(decodeData, &data)
 	}
 

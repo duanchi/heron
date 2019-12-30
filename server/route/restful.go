@@ -29,6 +29,7 @@ func (this RestfulRoutesMap) Init (httpServer *gin.Engine) {
 			handler.RestfulHandle(resource, RestfulRoutes[resource], ctx, httpServer)
 		})
 
+		httpServer.Any("/" + resource, handlers...)
 		httpServer.Any("/" + resource + "/", handlers...)
 		httpServer.Any("/" + resource + "/:id", handlers...)
 	}

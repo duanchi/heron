@@ -5,10 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	_interface "go.heurd.com/heron-go/heron/interface"
+	"go.heurd.com/heron-go/heron/server/websocket"
 	"go.heurd.com/heron-go/heron/types"
 	"net/http"
 	"reflect"
 	"runtime/debug"
+	"strings"
 )
 
 func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, engine *gin.Engine) {
@@ -45,6 +47,17 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	var err error
 
 	executor := controller.Interface().(_interface.RestControllerInterface)
+
+	// Upgrade Protocol to Websocket
+	if method == "GET" {
+		upgradeRequest := ctx.Request.Header.Get("Connection")
+		upgradeProtocol := ctx.Request.Header.Get("Upgrade")
+
+		if upgradeRequest == "Upgrade" && strings.ToLower(upgradeProtocol) == "websocket" {
+			websocket.Handle(id, resource, &params, ctx, executor.Communicate)
+			return
+		}
+	}
 
 	switch method {
 	case "GET":
