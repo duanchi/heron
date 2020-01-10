@@ -2,23 +2,21 @@
 
 ## 项目初始化
 
-wand-go 目前支持本地`go mod`初始化
+wand-go 支持`go mod`初始化
 
 ```
 require (
-	go.heurd.com/heron-go/heron v0.0.0
+	go.heurd.com/heron-go/heron v1.2.1
 )
-
-replace go.heurd.com/heron-go/heron => [path to gopath]/src/go.heurd.com/heron-go/heron
 ```
 
 
 
 ## 配置文件
 
-### 自动初始化配置
+### 配置结构体
 
-项目中所有的配置文件可以通过定义一个`struct`类型的变量实现, 该变量可以引用`go.heurd.com/heron-go/heron/types`下的`Config`结构体进行组合。
+项目中所有的配置可以通过定义一个`struct`类型的变量, 并由config/application.yaml填充配置项内容, 该变量可以引用`go.heurd.com/heron-go/heron/types`下的`Config`结构体进行组合。
 
 ```go
 package config
@@ -26,26 +24,46 @@ package config
 import "go.heurd.com/heron-go/heron/types"
 
 var Config = struct {
-	types.Config
-	Env string `env:"ENV,development"`
-	ServerPort string `env:"SERVER_PORT,9080"`
-	Db struct{
-		Enabled bool `value:"true"`
-		Dsn string `value:"host=172.31.16.1 port=3308 user=tb_cloud password=123456 dbname=thingsboard sslmode=disable"`
-	}
-	// 其他项目自定义配置
+	types.Config	`yaml:",inline"`
+
+	Jwt struct {
+		SignatureKey string `yaml:"jwt_signature_key" default:"${JWT_SIGNATURE_KEY}"`
+		ExpiresIn  int64 `yaml:"jwt_expires_in" default:"${JWT_EXPIRES_IN:7200}"`
+	} // 自定义配置
+
+	Beans struct {} // IOC容器初始化
 }{}
 ```
 
-在配置变量初始化时, 可以通过常规变量初始化方式进行初始化, 也可以通过`wand-go`提供的简化方式(通过字段标签)通过初始化匿名结构体进行变量初始化,。
+在配置结构体中, 需要定义`yaml`的标签指明扩展配置文件的对应位置, 也可以通过`default`标签来指定配置的默认值
 
-目前支持`env`和`value`两组标签
+> 配置文件、默认值中可以使用`${}`的方式指定对应的环境变量, 也可以使用`${ENV_KEY:default_value}`的方式指定当未找到该环境变量时赋予的默认值
 
-- `value` 设置静态配置项的属性值，标签的值即为属性值的描述值[*]
+> 配置字段中的实际赋值可根据字段基本类型自动进行类型转换, 支持的基本类型有`int/int64` `float64` `string` `bool`
 
-- `env` 将配置项的属性值设置为标签值所定义的环境变量, 配合docker可以方便的完成不同环境配置
+> 配置yaml文件默认配置在`config/application.yaml`, 可以通过Bootstrap方法更改配置文件位置
 
-> `value`和`env`实际赋值可根据字段基本类型自动进行类型转换, 支持的基本类型有`int/int64` `float64` `string` `bool`
+```yaml
+env: "${ENV:development}"
+#服务配置
+application:
+  server_port: "${SERVER_PORT:9801}"
+  jwt_signature_key: "${JWT_SIGNATURE_KEY}"
+  jwt_expire_in: "${JWT_EXPIRE_IN:7200}"
+db:
+  enabled: true
+  dsn: "${DB_DSN:postgres://postgres:shvEVodOcqqTCWJ0@61.55.158.34:58932/cloud?sslmode=disable&prefix=dp_}"
+```
+
+
+
+```go
+func main() {
+	heron.SetConfigFile("./config/dashboard.yaml")
+	heron.Bootstrap(&Config)
+	return
+}
+```
 
 
 
@@ -89,6 +107,20 @@ func getConfig () {
 
 > 读取配置后, 需手动进行类型转换
 
+
+
+#### 在Bean中注入配置值
+
+在Bean(可参考IOC容器章节)中, 可以使用`value`标签以类似配置文件中获取环境变量的方式获取配置值
+
+```go
+struct Sample struct {
+  Expires string `value:"${Jwt.Expires}"`
+}
+```
+
+> 为保证值可以正确注入, 需要将被注入的属性或字段设置为`可导出`的
+
 ## 项目文件结构
 
 建议采用三层分离的文件结构，即`控制器`、`业务逻辑服务`、`实体关系映射`三层，分别对应`controller`、`sevice`、`mapper`三个包。
@@ -97,7 +129,6 @@ root
 
 - main.go
 - config.go
-- bean.go
 - controller
   - xxx.go `控制器文件`
 - service
@@ -144,6 +175,28 @@ func (service *Devices) Init() {
 
 
 
+### Bean初始化
+
+Bean定义完成后, 通过加入到`Config`文件的 `Beans`结构中, 可以实现Bean的自动初始化
+
+```go
+var Config = struct {
+	types.Config	`yaml:",inline"`
+  // ...
+	Beans struct {
+
+		GatewayMiddleware middleware.GatewayMiddleware `middleware:"true"`
+
+		AuthorizationToken authorization.TokenController `rest:"authorization/token"`
+
+		AccountService authorization2.AccountService
+		TokenService authorization2.TokenService
+	}
+}{}
+```
+
+
+
 #### Bean初始化切面
 
 可通过实现`Bean`类型的`Init`方法实现`Bean`初始化后的操作
@@ -172,15 +225,71 @@ func (service *Devices) Init() {
 
 > 自动装载时，字段类型需设置为将要装载类型`Bean`的指针类型，并将`autowired`值设置为`true`
 
-##### `route`
+##### `route`、`rest`、`method`
 
 详见`Http服务`章节中的`路由配置`
+
+##### `middleware`
+
+用于定义基于HTTP服务的中间件处理方法, 如定义一个登录或者令牌授权认证、请求日志记录等, 通过继承`abstract.middlewire`定义一个中间件处理方法
+
+```go
+type AuthorizationMiddleware struct {
+	abstract.Middleware
+	TokenService *service.TokenService `autowired:"true"`
+}
+
+func (this *AuthorizationMiddleware) AfterRoute (ctx *gin.Context) {
+  // 具体处理方法
+	ctx.Next()
+	return
+}
+```
+
+
 
 #####  `扩展取值`
 
 提供可自定义的`tag`标签，并通过扩展方法执行`Bean`初始化时的扩展操作。
 
-> TODO: 更新自定义扩展
+可通过继承`types.BeanParser`来实现一个自定义的Bean处理扩展, 类似Java Spring中的注解定义
+
+```go
+type NativeApiBeanParser struct {
+	types.BeanParser
+}
+
+func (parser NativeApiBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {
+	resource := tag.Get("native_api")
+
+	if resource != "" {
+		NativeApiBeans[resource] = bean
+	}
+}
+```
+
+在Config结构体中加入配置
+
+```
+var Config = struct {
+	config.Config	`yaml:",inline"`
+	// ...
+	Beans struct {
+		NativeApiRoutesController native_api.RoutesController `native_api:"routes"`
+		NativeApiServicesController native_api.ServicesController `native_api:"services"`
+	}
+}{
+	Config: config.Config{
+		Config: types.Config{
+			BeanParsers: []_interface.BeanParserInterface{
+				&native_api.NativeApiBeanParser{},
+			},
+		},
+	},
+}
+```
+
+
 
 项目初始化后可通过`wand.GetBean`方法获取`Bean`
 
@@ -188,12 +297,14 @@ func (service *Devices) Init() {
 import wand
 
 func Test() {
-  wand.GetBean("Fecth").(Fetch).Get()
+  wand.GetBean("Fetch").(Fetch).Get()
 }
 
 ```
 
 
+
+> **只有在`Config`中定义的Bean才可以使用Bean的各种特性, 如自动初始化、全局对象、自动注入等特性**
 
 ## Http服务
 
@@ -205,15 +316,17 @@ func Test() {
 
 ### 路由配置
 
-Restful路由目前可根据资源进行路由配置，是通过扩展`Bean`定义实现的，因此只需在`Bean`变量中添加名为`route`的标签, 并设置其属性值为资源路径即可，`Bean`字段类型为相应的处理结构体。
+请求路由目前可根据资源进行路由配置，是通过扩展`Bean`定义实现的，因此只需在`Bean`变量中添加名为`route`或`rest`或`restful`的标签, 并设置其属性值为绑定路径或资源路径即可，`Bean`字段类型为相应的处理结构体。
 
-配置完成后，可自动配置 `[resource]/:id`和`[resource]/`的路由解析
+另外还可以追加使用`method`方法限定该路由处理方法可以处理的HTTP请求类型, 多个类型以`,`分割
+
+> `rest`路由配置完成后，可自动配置`[resource]`, `[resource]/:id`和`[resource]/`的路由解析
 
 ### Restful控制器
 
-创建Restful控制器只需新建一个结构体，组合`wand.abstract.RestController`，并实现当前控制器关心的处理方法即可。
+创建Restful控制器只需新建一个结构体，组合`abstract.RestController`，并实现当前控制器关心的处理方法即可。
 
-> 若不组合`wand.abstract.RestController`，则需实现所有`wand.interface.RestControllerInterface`方法
+> 若不组合`abstract.RestController`，则需实现所有`wand.interface.RestControllerInterface`方法
 
 可实现的方法有
 
@@ -270,6 +383,22 @@ Remove (
     ctx *gin.Context
 ) (result interface{}, err types.Error) {}
 ```
+
+
+
+#### Communicate(通信-基于websocket) - WEBSOCKET
+
+```go
+func (controller RestController)
+Communicate (
+    connection *websocket.Conn,
+  	id string, resource string,
+  	parameters *gin.Params,
+  	ctx *gin.Context
+) (err types.Error) {}
+```
+
+
 
 > 方法返回值可以是任意可转换为`json`的数据格式
 
