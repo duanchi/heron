@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
 	"go.heurd.com/heron-go/heron/config"
@@ -77,6 +78,40 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 			return
 		}
 
+	case "mysql":
+
+		host := dsnUrl.Host
+		query := dsnUrl.RawQuery
+
+		if query == "" {
+			query = ""
+		} else {
+			query = "?" + query
+		}
+
+		if host[0:1] == "/" {
+			host = "unix(" + host + ")"
+		} else {
+			host = "tcp(" + host + ")"
+		}
+
+		dsn := dsnUrl.User.String() + "@" + host + dsnUrl.Path + query
+		prefix := dsnUrl.Query().Get("prefix")
+
+		connection, err = xorm.NewEngine("mysql", dsn)
+		if err != nil {
+			panic(fmt.Sprintf("Database Init Error %s", dsn))
+		}
+
+		if prefix != "" {
+			connection.SetTableMapper(core.NewPrefixMapper(core.SnakeMapper{}, prefix))
+		}
+
+		err = connection.Ping()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	}
 
 	fmt.Println("connect database success!")
