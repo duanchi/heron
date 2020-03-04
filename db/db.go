@@ -81,7 +81,9 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 	case "mysql":
 
 		host := dsnUrl.Host
-		query := dsnUrl.RawQuery
+		prefix := dsnUrl.Query().Get("prefix")
+		dsnUrl.Query().Del("prefix")
+		query := dsnUrl.Query().Encode()
 
 		if query == "" {
 			query = ""
@@ -96,7 +98,6 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 		}
 
 		dsn := dsnUrl.User.String() + "@" + host + dsnUrl.Path + query
-		prefix := dsnUrl.Query().Get("prefix")
 
 		connection, err = xorm.NewEngine("mysql", dsn)
 		if err != nil {
