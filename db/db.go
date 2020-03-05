@@ -38,15 +38,15 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 	switch dsnUrl.Scheme {
 	case "postgres":
 		password, _ := dsnUrl.User.Password()
-		tableStack := strings.Split(strings.Trim(dsnUrl.Path, "/"), ".")
+		dbStack := strings.Split(strings.Trim(dsnUrl.Path, "/"), "/")
 		prefix := dsnUrl.Query().Get("prefix")
-		table := ""
+		dbname := ""
 		schema := ""
-		if len(tableStack) > 1 {
-			table = tableStack[1]
-			schema = tableStack[0]
+		if len(dbStack) > 1 {
+			dbname = dbStack[0]
+			schema = dbStack[1]
 		} else {
-			table = tableStack[0]
+			dbname = dbStack[0]
 		}
 
 		dsn := fmt.Sprintf(
@@ -55,7 +55,7 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 			dsnUrl.Port(),
 			dsnUrl.User.Username(),
 			password,
-			table,
+			dbname,
 			dsnUrl.Query().Get("sslmode"),
 		)
 
