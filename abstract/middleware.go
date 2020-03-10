@@ -6,6 +6,7 @@ import (
 )
 
 type Middleware struct {
+	Bean
 	_interface.MiddlewareInterface
 }
 

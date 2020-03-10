@@ -93,13 +93,14 @@ func Register (beanValue reflect.Value, beanDefinition reflect.StructField) {
 	if name == "" {
 		name = beanDefinition.Name
 	}
+	fmt.Println("[Wand-Go] Init Bean: " + name)
 	beanMaps[name] = reflect.New(beanDefinition.Type).Elem()
 	beanNameMaps[name] = beanMaps[name].Addr()
 	beanTypeMaps[beanMaps[name].Addr().Type()] = beanMaps[name].Addr()
 
 	extendParse(tag, beanMaps[name].Addr(), beanDefinition.Type, name)
 
-	fmt.Println("[Wand-Go] Init Bean: " + name)
+	fmt.Println("[Wand-Go] Init Bean: " + name + " Ok!")
 }
 
 func extendParse (tag reflect.StructTag, bean reflect.Value, definition reflect.Type, beanName string) {

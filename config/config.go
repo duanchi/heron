@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"go.heurd.com/heron-go/heron/config/yaml"
 	"go.heurd.com/heron-go/heron/util"
 	"reflect"
@@ -12,11 +13,14 @@ import (
 var ConfigInstance interface{}
 
 func Init(config interface{}) {
+	fmt.Println("[Wand-Go] Init Config...")
 	err := yaml.GetConfig(config)
 
 	if err == nil {
 		parseConfig(config, "")
 		ConfigInstance = config
+	} else {
+		panic(err)
 	}
 }
 
