@@ -1,6 +1,7 @@
 package http
 
 import (
+	"bytes"
 	json2 "encoding/json"
 	"net/http"
 	"reflect"
@@ -33,7 +34,7 @@ const (
 )
 
 func (this *Request) POST(url string) *Request {
-	this.Instance()
+	this.instance()
 
 	this.method = POST
 	this.url = url
@@ -46,21 +47,21 @@ func (this *Request) New() *Request {
 	return this
 }
 
-func (this *Request) Instance() {
+func (this *Request) instance() {
 	if !this.initialed {
 		this.New()
 	}
 }
 
 func (this *Request) BaseUrl (url string) *Request {
-	this.Instance()
+	this.instance()
 
 	this.baseUrl = url
 	return this
 }
 
 func (this *Request) Body (data []byte) *Request {
-	this.Instance()
+	this.instance()
 
 	this.payload = data
 
@@ -68,7 +69,7 @@ func (this *Request) Body (data []byte) *Request {
 }
 
 func (this *Request) Json (json interface{}) *Request {
-	this.Instance()
+	this.instance()
 
 	this.Header("Content-Type", "application/json")
 	this.payload, this.error = json2.Marshal(json)
@@ -77,7 +78,7 @@ func (this *Request) Json (json interface{}) *Request {
 }
 
 func (this *Request) Form (formData interface{}) *Request {
-	this.Instance()
+	this.instance()
 
 	switch reflect.TypeOf(formData).Kind() {
 	case reflect.String:
@@ -90,7 +91,7 @@ func (this *Request) Form (formData interface{}) *Request {
 }
 
 func (this *Request) Query (query interface{}) *Request {
-	this.Instance()
+	this.instance()
 
 	switch reflect.TypeOf(query).Kind() {
 	case reflect.String:
@@ -107,7 +108,7 @@ func (this *Request) Query (query interface{}) *Request {
 }
 
 func (this *Request) Header (key string, value string) *Request {
-	this.Instance()
+	this.instance()
 
 	this.header.Set(key, value)
 
@@ -115,7 +116,7 @@ func (this *Request) Header (key string, value string) *Request {
 }
 
 func (this *Request) Headers (headers http.Header) *Request {
-	this.Instance()
+	this.instance()
 
 	for k,v := range headers {
 		this.header[k] = v
@@ -124,10 +125,39 @@ func (this *Request) Headers (headers http.Header) *Request {
 	return this
 }
 
+func (this *Request) BearerToken (token string) *Request {
+
+	this.Header("Authorization", token)
+
+	return this
+}
+
 func (this *Request) Response () (response Response, err error) {
-	this.Instance()
+	this.instance()
 
+	if this.error != nil {
+		return Response{}, this.error
+	}
 
+	url := this.baseUrl + this.url
+
+	request, err := http.NewRequest(this.method, url, bytes.NewReader(this.payload))
+
+	if err != nil {
+		return
+	}
+
+	request.Header = this.header
+
+	httpResponse, err := (&http.Client{}).Do(request)
+
+	if err != nil {
+		return
+	}
+
+	err = response.From(httpResponse)
+
+	if err != nil { return }
 
 	return
 }
