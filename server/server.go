@@ -6,6 +6,7 @@ import (
 	"go.heurd.com/heron-go/heron/server/middleware"
 	"go.heurd.com/heron-go/heron/server/route"
 	"go.heurd.com/heron-go/heron/server/static"
+	"go.heurd.com/heron-go/heron/server/validate"
 	"log"
 )
 
@@ -20,6 +21,8 @@ func Init () {
 	} else {
 		gin.SetMode("debug")
 	}
+
+	validate.Init()
 
 	middleware.Init(HttpServer, middleware.BeforeRoute)
 

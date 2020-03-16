@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	_interface "go.heurd.com/heron-go/heron/interface"
@@ -30,16 +29,34 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 
 		if exception := recover(); exception != nil {
 			defer func() {
-				if err := recover(); err != nil {
+				/*if err := recover(); err != nil {
 					response.Message = fmt.Sprint(exception)
 				}
-				debug.PrintStack()
+				if ctx.Writer.Status() != http.StatusOK {
+					statusCode = ctx.Writer.Status()
+				}
+				ctx.Writer.Header().Set("Content-Type", "application/json")*/
+				if ctx.Writer.Status() != http.StatusOK {
+					statusCode = ctx.Writer.Status()
+				}
 				ctx.JSON(statusCode, response)
+				debug.PrintStack()
 			}()
-			runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
-			fmt.Println(runtimeError.Error())
-			response.Message = runtimeError.Error()
-			statusCode = runtimeError.Code()
+
+
+			_, implemented := exception.(types.Error)
+
+			if implemented {
+				runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
+				response.Message = runtimeError.Error()
+				statusCode = runtimeError.Code()
+			} else {
+				commonError := reflect.ValueOf(exception).Interface().(error)
+				response.Message = commonError.Error()
+			}
+
+
+
 		}
 	}()
 
