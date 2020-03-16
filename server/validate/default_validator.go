@@ -1,10 +1,10 @@
 package validate
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator"
 	"reflect"
+	"strings"
 	"sync"
 )
 
@@ -21,23 +21,58 @@ func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 
 		v.lazyInit()
 
-		if err := v.validate.Struct(obj); err != nil {
+		if errs := v.validate.Struct(obj); errs != nil {
 
 			objType := reflect.TypeOf(reflect.ValueOf(obj).Elem().Interface())
-
-			fmt.Println(objType)
+			replaceMap := map[string]struct{
+				replace bool
+				comment string
+			}{}
 
 			for n := 0; n < objType.NumField(); n++ {
-				fmt.Println(objType.Field(n).Tag.Get("validate"), objType.Field(n).Tag.Get("comment"))
+				comment := objType.Field(n).Tag.Get("comment")
+				if comment != "" {
+					replace := false
+					if len(comment) > 9 && comment[len(comment) - 9:len(comment) - 1] == ",replace" {
+						replace = true
+						comment = comment[0:len(comment) - 9]
+ 					}
+					replaceMap[objType.Field(n).Name] = struct {
+						replace bool
+						comment string
+					}{replace: replace, comment: comment}
+				}
 			}
 
-			fmt.Printf("%v", err)
+			validateErrors := ValidationErrors{}
 
-			for _, err := range err.(validator.ValidationErrors) {
-				fmt.Println(err.ActualTag())
+			for _, err := range errs.(validator.ValidationErrors) {
+				transField := err.Translate(trans)
+
+				for k, v := range replaceMap {
+					if v.replace {
+						transField = v.comment
+					} else {
+						transField = strings.ReplaceAll(transField, k, v.comment)
+					}
+				}
+				validateError := fieldError{
+					tag:         err.Tag(),
+					actualTag:   err.ActualTag(),
+					ns:          err.Namespace(),
+					structNs:    err.StructNamespace(),
+					field:       err.Field(),
+					structfield: err.StructField(),
+					value:       err.Value(),
+					param:       err.Param(),
+					kind:        err.Kind(),
+					typ:         err.Type(),
+					translate:   transField,
+				}
+				validateErrors = append(validateErrors, validateError)
 			}
 
-			return err
+			return validateErrors
 		}
 	}
 
