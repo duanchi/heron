@@ -29,7 +29,7 @@ func (this *Response) From (httpResponse *http.Response) (err error) {
 	return
 }
 
-func (this *Response) BindJson (v *interface{}) (err error) {
+func (this *Response) BindJSON (v interface{}) (err error) {
 	err = json.Unmarshal(this.Payload, v)
 	
 	return

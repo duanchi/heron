@@ -3,6 +3,7 @@ package http
 import (
 	"bytes"
 	json2 "encoding/json"
+	"go.heurd.com/heron-go/heron/util/arrays"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -23,54 +24,125 @@ type Request struct {
 }
 
 const (
-	POST = "POST"
-	GET = "GET"
-	PUT = "PUT"
-	DELETE = "DELETE"
-	HEAD = "HEAD"
-	PATCH = "PATCH"
-	OPTIONS = "OPTIONS"
-	TRACE = "TRACE"
+	METHOD_POST = "POST"
+	METHOD_GET = "GET"
+	METHOD_PUT = "PUT"
+	METHOD_DELETE = "DELETE"
+	METHOD_HEAD = "HEAD"
+	METHOD_PATCH = "PATCH"
+	METHOD_OPTIONS = "OPTIONS"
+	METHOD_TRACE = "TRACE"
 )
 
-func (this *Request) POST(url string) *Request {
-	this.instance()
+func POST(url string) *Request {
+	request := New()
 
-	this.method = POST
+	request.Method(METHOD_POST)
+	request.Url(url)
+
+	return &request
+}
+
+func GET(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_GET)
+	request.Url(url)
+
+	return &request
+}
+
+func (this Request) PUT(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_PUT)
+	request.Url(url)
+
+	return &request
+}
+
+func (this Request) DELETE(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_DELETE)
+	request.Url(url)
+
+	return &request
+}
+
+func (this Request) HEAD(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_HEAD)
+	request.Url(url)
+
+	return &request
+}
+
+func (this Request) PATCH(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_PATCH)
+	request.Url(url)
+
+	return &request
+}
+
+func (this Request) OPTIONS(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_OPTIONS)
+	request.Url(url)
+
+	return &request
+}
+
+func (this Request) TRACE(url string) *Request {
+	request := New()
+
+	request.Method(METHOD_TRACE)
+	request.Url(url)
+
+	return &request
+}
+
+func (this *Request) Url(url string) *Request {
 	this.url = url
 
 	return this
 }
 
-func (this *Request) New() *Request {
-	this.initialed = true
+func (this *Request) Method(method string) *Request {
+	if _, has := arrays.ContainsString([]string{ METHOD_GET, METHOD_POST, METHOD_PUT, METHOD_DELETE, METHOD_OPTIONS, METHOD_PATCH, METHOD_HEAD }, method); has {
+		this.method = method
+	} else {
+		this.method = METHOD_GET
+	}
+
+
 	return this
 }
 
-func (this *Request) instance() {
-	if !this.initialed {
-		this.New()
+func New() Request {
+	instance := Request{
+		initialed: true,
+		header: http.Header{},
 	}
+	return instance
 }
 
 func (this *Request) BaseUrl (url string) *Request {
-	this.instance()
-
 	this.baseUrl = url
 	return this
 }
 
 func (this *Request) Body (data []byte) *Request {
-	this.instance()
-
 	this.payload = data
 
 	return this
 }
 
-func (this *Request) Json (json interface{}) *Request {
-	this.instance()
-
+func (this *Request) JSON (json interface{}) *Request {
 	this.Header("Content-Type", "application/json")
 	this.payload, this.error = json2.Marshal(json)
 
@@ -78,8 +150,6 @@ func (this *Request) Json (json interface{}) *Request {
 }
 
 func (this *Request) Form (formData interface{}) *Request {
-	this.instance()
-
 	switch reflect.TypeOf(formData).Kind() {
 	case reflect.String:
 		this.queryString = formData.(string)
@@ -91,8 +161,6 @@ func (this *Request) Form (formData interface{}) *Request {
 }
 
 func (this *Request) Query (query interface{}) *Request {
-	this.instance()
-
 	switch reflect.TypeOf(query).Kind() {
 	case reflect.String:
 		this.queryString = query.(string)
@@ -108,16 +176,12 @@ func (this *Request) Query (query interface{}) *Request {
 }
 
 func (this *Request) Header (key string, value string) *Request {
-	this.instance()
-
 	this.header.Set(key, value)
 
 	return this
 }
 
 func (this *Request) Headers (headers http.Header) *Request {
-	this.instance()
-
 	for k,v := range headers {
 		this.header[k] = v
 	}
@@ -133,8 +197,6 @@ func (this *Request) BearerToken (token string) *Request {
 }
 
 func (this *Request) Response () (response Response, err error) {
-	this.instance()
-
 	if this.error != nil {
 		return Response{}, this.error
 	}
