@@ -11,10 +11,10 @@ type Bean struct {
 
 func (this *Bean) Init () {}
 
-func (this *Bean) GetBeanName () (name string) {
+func (this *Bean) GetName () (name string) {
 	return this.BeanName
 }
 
-func (this *Bean) SetBeanName (name string) {
+func (this *Bean) SetName (name string) {
 	this.BeanName = name
 }
