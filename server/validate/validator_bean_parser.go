@@ -18,19 +18,28 @@ func (parser ValidatorBeanParser) Parse (tag reflect.StructTag, bean reflect.Val
 	if isValidator {
 		for i := 0; i < definition.NumField(); i++ {
 			validateTag := definition.Field(i).Tag.Get("validate-tag")
-			validateFunc := definition.Field(i).Tag.Get("validate-func")
+			validateFunc := definition.Field(i).Tag.Get("validate-function")
+			validateTranslate := definition.Field(i).Tag.Get("validate-translate")
+
+			if validateTranslate == "" {
+				validateTranslate = "{0} 验证失败"
+			}
 
 			if validateFunc != "" && validateTag != "" {
 				if method, has := definition.MethodByName(validateFunc); has {
 
-					Validators[validateTag] = func (fl validator.FieldLevel) bool {
+					Validators[validateTag] = struct {
+						validateFunction  validator.Func
+						validateTranslate string
+					}{
+						validateFunction: func (fl validator.FieldLevel) bool {
+							result := bean.Elem().Method(method.Index).Call([]reflect.Value{
+								reflect.ValueOf(fl),
+							})
 
-						result := bean.Elem().Method(method.Index).Call([]reflect.Value{
-							reflect.ValueOf(fl),
-						})
-
-						return result[0].Interface().(bool)
-					}
+							return result[0].Interface().(bool)
+						},
+						validateTranslate: validateTranslate}
 					fmt.Println("Registered " + validateTag + " validator")
 				}
 			}
