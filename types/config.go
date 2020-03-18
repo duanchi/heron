@@ -11,6 +11,7 @@ type Config struct {
 	Application config.Application `yaml:"application"`
 	Rpc 		config.Rpc `yaml:"rpc"`
 	Feign		config.Feign `yaml:"feign"`
+	Log			config.Log `yaml:"log"`
 
 	BeanParsers interface{} `yaml:"-"`
 	Beans		struct {} `yaml:"-"`
