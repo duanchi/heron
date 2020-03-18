@@ -52,7 +52,7 @@ func GET(url string) *Request {
 	return &request
 }
 
-func (this Request) PUT(url string) *Request {
+func PUT(url string) *Request {
 	request := New()
 
 	request.Method(METHOD_PUT)
@@ -61,7 +61,7 @@ func (this Request) PUT(url string) *Request {
 	return &request
 }
 
-func (this Request) DELETE(url string) *Request {
+func DELETE(url string) *Request {
 	request := New()
 
 	request.Method(METHOD_DELETE)
@@ -70,7 +70,7 @@ func (this Request) DELETE(url string) *Request {
 	return &request
 }
 
-func (this Request) HEAD(url string) *Request {
+func HEAD(url string) *Request {
 	request := New()
 
 	request.Method(METHOD_HEAD)
@@ -79,7 +79,7 @@ func (this Request) HEAD(url string) *Request {
 	return &request
 }
 
-func (this Request) PATCH(url string) *Request {
+func PATCH(url string) *Request {
 	request := New()
 
 	request.Method(METHOD_PATCH)
@@ -88,7 +88,7 @@ func (this Request) PATCH(url string) *Request {
 	return &request
 }
 
-func (this Request) OPTIONS(url string) *Request {
+func OPTIONS(url string) *Request {
 	request := New()
 
 	request.Method(METHOD_OPTIONS)
@@ -97,7 +97,7 @@ func (this Request) OPTIONS(url string) *Request {
 	return &request
 }
 
-func (this Request) TRACE(url string) *Request {
+func TRACE(url string) *Request {
 	request := New()
 
 	request.Method(METHOD_TRACE)
