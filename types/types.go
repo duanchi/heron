@@ -22,4 +22,5 @@ type Response struct {
 type Error interface {
 	error
 	Code() int
+	Data() interface{}
 }

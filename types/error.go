@@ -4,7 +4,8 @@ import "net/http"
 
 type RuntimeError struct {
 	Message string
-	ErrorCode    int
+	ErrorCode int
+	ErrorData interface{}
 }
 
 func (this RuntimeError) Error() string {
@@ -13,6 +14,10 @@ func (this RuntimeError) Error() string {
 
 func (this RuntimeError) Code() int {
 	return this.ErrorCode
+}
+
+func (this RuntimeError) Data() interface{} {
+	return this.ErrorData
 }
 
 func (this RuntimeError) NewWithCode (err error, code int) RuntimeError {
