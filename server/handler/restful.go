@@ -50,13 +50,11 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 				runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
 				response.Message = runtimeError.Error()
 				statusCode = runtimeError.Code()
+				response.Data = runtimeError.Data()
 			} else {
 				commonError := reflect.ValueOf(exception).Interface().(error)
 				response.Message = commonError.Error()
 			}
-
-
-
 		}
 	}()
 
