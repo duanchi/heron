@@ -1,6 +1,7 @@
 package heron
 
 import (
+	"fmt"
 	"go.heurd.com/heron-go/heron/bean"
 	"go.heurd.com/heron-go/heron/config"
 	"go.heurd.com/heron-go/heron/db"
@@ -8,11 +9,16 @@ import (
 	"go.heurd.com/heron-go/heron/log"
 	"go.heurd.com/heron-go/heron/server"
 	config2 "go.heurd.com/heron-go/heron/types/config"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func Bootstrap(configuration interface{}) {
 	config.Init(configuration)
 	Config = configuration
+
+	errs := make(chan error, 3)
 
 	bean.Init(
 		config.Get("Beans"),
@@ -32,8 +38,18 @@ func Bootstrap(configuration interface{}) {
 
 	feign.Init(config.Get("Feign").(config2.Feign))
 
-	server.Init()
+	go server.Init(errs)
 	HttpServer = server.HttpServer
+
+	go func() {
+		c := make(chan os.Signal, 2)
+		signal.Notify(c, syscall.SIGINT)
+		errs <- fmt.Errorf("%s", <-c)
+	}()
+
+	err := <-errs
+
+	log.Log.Error("%s", err)
 }
 
 func SetConfigFile(configFile string) {

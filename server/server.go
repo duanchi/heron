@@ -12,7 +12,7 @@ import (
 
 var HttpServer *gin.Engine
 
-func Init () {
+func Init (err chan error) {
 	HttpServer = gin.Default()
 
 
@@ -35,4 +35,8 @@ func Init () {
 	if serverError != nil {
 		log.Fatal(serverError)
 	}
+
+	err <- serverError
+
+	return
 }
