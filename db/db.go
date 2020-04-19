@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/go-xorm/xorm"
+	"github.com/xormplus/xorm"
 	_ "github.com/lib/pq"
 	"go.heurd.com/heron-go/heron/config"
 	"log"
