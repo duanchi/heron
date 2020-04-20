@@ -6,6 +6,7 @@ import (
 	"github.com/xormplus/xorm"
 	_ "github.com/lib/pq"
 	"go.heurd.com/heron-go/heron/config"
+	config2 "go.heurd.com/heron-go/heron/types/config"
 	"log"
 	"net/url"
 	"strings"
@@ -13,15 +14,38 @@ import (
 )
 
 var Connection *xorm.Engine
+var Connections map[string]*xorm.Engine
 
 func Init () {
 	var err error
-	parsedDsn, _ := url.Parse(config.Get("Db.Dsn").(string))
-	Connection, err = connect(parsedDsn)
 
-	if err != nil {
+	sources := config.Get("Db.Sources").(map[string]config2.DbConfig)
 
+	if len(sources) > 0 {
+		Connections = map[string]*xorm.Engine{}
+		for name, sourceConfig := range sources {
+			parsedDsn, _ := url.Parse(sourceConfig.Dsn)
+			Connections[name], err = connect(parsedDsn)
+			fmt.Println("Data Source [" + name + "] Inited!")
+			if err != nil {
+				fmt.Println(err.Error())
+				break
+			}
+			if name == "default" {
+				Connection = Connections[name]
+			}
+		}
+	} else {
+		parsedDsn, _ := url.Parse(config.Get("Db.Dsn").(string))
+		Connection, err = connect(parsedDsn)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	}
+}
+
+func GetEngine (name string) *xorm.Engine {
+	return Connections[name]
 }
 
 func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {

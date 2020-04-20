@@ -11,7 +11,7 @@ var HttpServer *gin.Engine
 var Db *xorm.Engine
 var Config interface{}
 var Log *log.Logrus
-var Model []*xorm.Engine
+var DbMap map[string]*xorm.Engine
 
 func GetBean(name string) interface{} {
 	return bean.Get(name)
