@@ -46,7 +46,7 @@ func (this *Model) SetEngine(db *xorm.Engine) {
 }
 
 func (this *Model) SetSource(name string) {
-	this.engine = db.GetEngine(name)
+	this.engine = db.Engine(name)
 }
 
 // EnableSessionID if enable session id

@@ -44,8 +44,15 @@ func Init () {
 	}
 }
 
-func GetEngine (name string) *xorm.Engine {
+func Engine (name string) *xorm.Engine {
 	return Connections[name]
+}
+
+func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
+	parsedDsn, _ := url.Parse(sourceConfig.Dsn)
+	Connections[name], err = connect(parsedDsn)
+
+	return err
 }
 
 func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
