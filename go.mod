@@ -18,7 +18,7 @@ require (
 	github.com/go-playground/validator v9.30.0+incompatible
 	// github.com/go-xorm/xorm v0.7.9
 	github.com/go-sql-driver/mysql v1.4.1
-	github.com/gorilla/websocket v1.4.1
+	github.com/gorilla/websocket v1.4.2
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/satori/go.uuid v1.2.0
@@ -32,3 +32,5 @@ require (
 	gopkg.in/yaml.v2 v2.2.7
 	xorm.io/core v0.7.2
 )
+
+// replace github.com/xormplus/names => github.com/xormplus/xorm/names
