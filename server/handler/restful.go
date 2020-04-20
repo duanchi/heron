@@ -69,7 +69,7 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 		upgradeProtocol := ctx.Request.Header.Get("Upgrade")
 
 		if upgradeRequest == "Upgrade" && strings.ToLower(upgradeProtocol) == "websocket" {
-			websocket.Handle(id, resource, &params, ctx, executor.Communicate)
+			websocket.Handle(id, resource, &params, ctx, executor.Connect, executor.Communicate)
 			return
 		}
 	}
