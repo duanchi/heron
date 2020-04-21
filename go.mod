@@ -21,6 +21,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0
+	github.com/muesli/cache2go v0.0.0-20191019095710-4098a3aa8c94 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/syndtr/goleveldb v1.0.0 // indirect

@@ -12,7 +12,7 @@ type Config struct {
 	Rpc 		config.Rpc `yaml:"rpc"`
 	Feign		config.Feign `yaml:"feign"`
 	Log			config.Log `yaml:"log"`
-
+	Cache		config.Cache `yaml:"cache"`
 	BeanParsers interface{} `yaml:"-"`
 	Beans		struct {} `yaml:"-"`
 }
