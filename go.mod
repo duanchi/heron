@@ -16,12 +16,13 @@ require (
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator v9.30.0+incompatible
+	github.com/go-redis/redis/v7 v7.2.0
 	// github.com/go-xorm/xorm v0.7.9
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/websocket v1.4.2
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0
-	github.com/muesli/cache2go v0.0.0-20191019095710-4098a3aa8c94 // indirect
+	github.com/muesli/cache2go v0.0.0-20191019095710-4098a3aa8c94
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/syndtr/goleveldb v1.0.0 // indirect
