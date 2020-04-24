@@ -109,7 +109,12 @@ func parseConfig (config interface{}, defaults string) {
 		for index := 0; index < configValue.Len(); index++ {
 			parseConfig(configValue.Index(index).Addr().Interface(), "")
 		}
+
+	case reflect.Ptr:
+		parseConfig(configValue.Elem(), "")
+
 	default:
+
 		if configValue.CanSet() {
 			v := ""
 
