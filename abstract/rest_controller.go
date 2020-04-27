@@ -26,6 +26,6 @@ func (this *RestController) Remove (id string, resource string, parameters *gin.
 	return "error", nil
 }
 
-func (this *RestController) Communicate (connection *websocket.Conn, id string, resource string, parameters *gin.Params, ctx *gin.Context) (err types.Error) {
+func (this *RestController) Connect (connection *websocket.Conn, id string, resource string, parameters *gin.Params, ctx *gin.Context) (err types.Error) {
 	return nil
 }

@@ -12,6 +12,15 @@ import (
 
 type Logrus struct {
 	std *logrus.Logger
+	enabled bool
+}
+
+func (this *Logrus) Enabled(status bool) {
+	this.enabled = status
+}
+
+func (this *Logrus) GetEnabled() bool {
+	return this.enabled
 }
 
 func (this *Logrus) StandardLogger() *logrus.Logger {
@@ -94,143 +103,198 @@ func (this *Logrus) WithTime(t time.Time) *logrus.Entry {
 
 // Trace logs a message at level Trace on the standard logger.
 func (this *Logrus) Trace(args ...interface{}) {
-	this.std.Trace(args...)
+	if this.enabled {
+		this.std.Trace(args...)
+	}
 }
 
 // Debug logs a message at level Debug on the standard logger.
 func (this *Logrus) Debug(args ...interface{}) {
-	this.std.Debug(args...)
+	if this.enabled {
+		this.std.Debug(args...)
+	}
 }
 
 // Print logs a message at level Info on the standard logger.
 func (this *Logrus) Print(args ...interface{}) {
-	this.std.Print(args...)
+	if this.enabled {
+		this.std.Print(args...)
+	}
 }
 
 // Info logs a message at level Info on the standard logger.
 func (this *Logrus) Info(args ...interface{}) {
-	this.std.Info(args...)
+	if this.enabled {
+		this.std.Info(args...)
+	}
 }
 
 // Warn logs a message at level Warn on the standard logger.
 func (this *Logrus) Warn(args ...interface{}) {
-	this.std.Warn(args...)
+	if this.enabled {
+		this.std.Warn(args...)
+	}
 }
 
 // Warning logs a message at level Warn on the standard logger.
 func (this *Logrus) Warning(args ...interface{}) {
-	this.std.Warning(args...)
+	if this.enabled {
+		this.std.Warning(args...)
+	}
 }
 
 // Error logs a message at level Error on the standard logger.
 func (this *Logrus) Error(args ...interface{}) {
-	this.std.Error(args...)
+	if this.enabled {
+		this.std.Error(args...)
+	}
 }
 
 // Panic logs a message at level Panic on the standard logger.
 func (this *Logrus) Panic(args ...interface{}) {
-	this.std.Panic(args...)
+	if this.enabled {
+		this.std.Panic(args...)
+	}
 }
 
 // Fatal logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
 func (this *Logrus) Fatal(args ...interface{}) {
-	this.std.Fatal(args...)
+	if this.enabled {
+		this.std.Fatal(args...)
+	}
 }
 
 // Tracef logs a message at level Trace on the standard logger.
 func (this *Logrus) Tracef(format string, args ...interface{}) {
-	this.std.Tracef(format, args...)
+	if this.enabled {
+		this.std.Tracef(format, args...)
+	}
 }
 
 // Debugf logs a message at level Debug on the standard logger.
 func (this *Logrus) Debugf(format string, args ...interface{}) {
-	this.std.Debugf(format, args...)
+	if this.enabled {
+		this.std.Debugf(format, args...)
+	}
 }
 
 // Printf logs a message at level Info on the standard logger.
 func (this *Logrus) Printf(format string, args ...interface{}) {
-	this.std.Printf(format, args...)
+	if this.enabled {
+		this.std.Printf(format, args...)
+	}
 }
 
 // Infof logs a message at level Info on the standard logger.
 func (this *Logrus) Infof(format string, args ...interface{}) {
-	this.std.Infof(format, args...)
+	if this.enabled {
+		this.std.Infof(format, args...)
+	}
 }
 
 // Warnf logs a message at level Warn on the standard logger.
 func (this *Logrus) Warnf(format string, args ...interface{}) {
-	this.std.Warnf(format, args...)
+	if this.enabled {
+		this.std.Warnf(format, args...)
+	}
 }
 
 // Warningf logs a message at level Warn on the standard logger.
 func (this *Logrus) Warningf(format string, args ...interface{}) {
-	this.std.Warningf(format, args...)
+	if this.enabled {
+		this.std.Warningf(format, args...)
+	}
 }
 
 // Errorf logs a message at level Error on the standard logger.
 func (this *Logrus) Errorf(format string, args ...interface{}) {
-	this.std.Errorf(format, args...)
+	if this.enabled {
+		this.std.Errorf(format, args...)
+	}
 }
 
 // Panicf logs a message at level Panic on the standard logger.
 func (this *Logrus) Panicf(format string, args ...interface{}) {
-	this.std.Panicf(format, args...)
+	if this.enabled {
+		this.std.Panicf(format, args...)
+	}
 }
 
 // Fatalf logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
 func (this *Logrus) Fatalf(format string, args ...interface{}) {
-	this.std.Fatalf(format, args...)
+	if this.enabled {
+		this.std.Fatalf(format, args...)
+	}
 }
 
 // Traceln logs a message at level Trace on the standard logger.
 func (this *Logrus) Traceln(args ...interface{}) {
-	this.std.Traceln(args...)
+	if this.enabled {
+		this.std.Traceln(args...)
+	}
 }
 
 // Debugln logs a message at level Debug on the standard logger.
 func (this *Logrus) Debugln(args ...interface{}) {
-	this.std.Debugln(args...)
+	if this.enabled {
+		this.std.Debugln(args...)
+	}
 }
 
 // Println logs a message at level Info on the standard logger.
 func (this *Logrus) Println(args ...interface{}) {
-	this.std.Println(args...)
+	if this.enabled {
+		this.std.Println(args...)
+	}
 }
 
 // Infoln logs a message at level Info on the standard logger.
 func (this *Logrus) Infoln(args ...interface{}) {
-	this.std.Infoln(args...)
+	if this.enabled {
+		this.std.Infoln(args...)
+	}
 }
 
 // Warnln logs a message at level Warn on the standard logger.
 func (this *Logrus) Warnln(args ...interface{}) {
-	this.std.Warnln(args...)
+	if this.enabled {
+		this.std.Warnln(args...)
+	}
 }
 
 // Warningln logs a message at level Warn on the standard logger.
 func (this *Logrus) Warningln(args ...interface{}) {
-	this.std.Warningln(args...)
+	if this.enabled {
+		this.std.Warningln(args...)
+	}
 }
 
 // Errorln logs a message at level Error on the standard logger.
 func (this *Logrus) Errorln(args ...interface{}) {
-	this.std.Errorln(args...)
+	if this.enabled {
+		this.std.Errorln(args...)
+	}
 }
 
 // Panicln logs a message at level Panic on the standard logger.
 func (this *Logrus) Panicln(args ...interface{}) {
-	this.std.Panicln(args...)
+	if this.enabled {
+		this.std.Panicln(args...)
+	}
 }
 
 // Fatalln logs a message at level Fatal on the standard logger then the process will exit with status set to 1.
 func (this *Logrus) Fatalln(args ...interface{}) {
-	this.std.Fatalln(args...)
+	if this.enabled {
+		this.std.Fatalln(args...)
+	}
 }
 
 type Fields map[string]interface{}
 
 var Log = Logrus{
 	std: logrus.New(),
+	enabled: true,
 }
 
 func Init (config config.Log) {

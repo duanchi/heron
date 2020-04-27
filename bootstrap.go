@@ -30,9 +30,10 @@ func Bootstrap(configuration interface{}) {
 		Db = db.Connection
 	}
 
-	if config.Get("Log.Enabled").(bool) {
-		log.Init(config.Get("Log").(config2.Log))
-		Log = &log.Log
+	log.Init(config.Get("Log").(config2.Log))
+	Log = &log.Log
+	if !config.Get("Log.Enabled").(bool) {
+		Log.Enabled(false)
 	}
 
 

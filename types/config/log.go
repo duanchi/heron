@@ -8,7 +8,7 @@ type Log struct {
 		Text FormatText `yaml:"text"`
 		Json FormatJson `yaml:"json"`
 	} `yaml:"format"`
-	Timestamp bool `yaml:"timestamp" default:"enable"`
+	Timestamp bool `yaml:"timestamp" default:"true"`
 	Output string `yaml:"output" default:"stdout://"`
 	Level string `yaml:"level" default:"error"`
 }

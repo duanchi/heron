@@ -203,6 +203,14 @@ func (this *Request) Response () (response Response, err error) {
 
 	url := this.baseUrl + this.url
 
+	if len(this.queryString) > 0 {
+		if strings.Contains(url, "?") {
+			url += "&" + this.queryString
+		} else {
+			url += "?" + this.queryString
+		}
+	}
+
 	request, err := http.NewRequest(this.method, url, bytes.NewReader(this.payload))
 
 	if err != nil {
