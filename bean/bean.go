@@ -8,6 +8,7 @@ import (
 	"go.heurd.com/heron-go/heron/server/route"
 	"go.heurd.com/heron-go/heron/server/validate"
 	"go.heurd.com/heron-go/heron/service"
+	"go.heurd.com/heron-go/heron/task"
 	"reflect"
 )
 
@@ -20,6 +21,7 @@ var coreBeanParsers = []_interface.BeanParserInterface{
 	&route.RouteBeanParser{},
 	&route.RestfulBeanParser{},
 	&middleware.MiddlewareBeanParser{},
+	&task.TaskBeanParser{},
 	&rpc.RpcBeanParser{},
 	&validate.ValidatorBeanParser{},
 }

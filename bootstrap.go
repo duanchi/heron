@@ -8,6 +8,7 @@ import (
 	"go.heurd.com/heron-go/heron/feign"
 	"go.heurd.com/heron-go/heron/log"
 	"go.heurd.com/heron-go/heron/server"
+	"go.heurd.com/heron-go/heron/task"
 	config2 "go.heurd.com/heron-go/heron/types/config"
 	"os"
 	"os/signal"
@@ -25,22 +26,37 @@ func Bootstrap(configuration interface{}) {
 		config.Get("BeanParsers"),
 	)
 
-	if config.Get("Db.Enabled").(bool) {
+	log.Init(config.Get("Log").(config2.Log))
+	Log = &log.Log
+	if !checkConfigEnabled("Log.Enabled") {
+		Log.Enabled(false)
+	}
+
+	if checkConfigEnabled("Task.Enabled") {
+		Log.Info("Task Enabled!")
+		task.Init()
+	}
+
+	if checkConfigEnabled("Db.Enabled") {
 		db.Init()
 		Db = db.Connection
 	}
 
-	log.Init(config.Get("Log").(config2.Log))
-	Log = &log.Log
-	if !config.Get("Log.Enabled").(bool) {
-		Log.Enabled(false)
+	if checkConfigEnabled("Feign.Enabled") {
+		feign.Init(config.Get("Feign").(config2.Feign))
 	}
 
-
-	feign.Init(config.Get("Feign").(config2.Feign))
+	if checkConfigEnabled("Task.Enabled") {
+		go task.RunAfterInit()
+	}
 
 	go server.Init(errs)
 	HttpServer = server.HttpServer
+
+	if checkConfigEnabled("Task.Enabled") {
+		go task.RunOnStart()
+	}
+
 
 	go func() {
 		c := make(chan os.Signal, 2)
@@ -50,9 +66,18 @@ func Bootstrap(configuration interface{}) {
 
 	err := <-errs
 
+	if checkConfigEnabled("Task.Enabled") {
+		go task.RunOnExit()
+	}
+
+
 	log.Log.Error("%s", err)
 }
 
 func SetConfigFile(configFile string) {
 	config.SetConfigFile(configFile)
+}
+
+func checkConfigEnabled(configStack string) bool {
+	return config.Get(configStack).(bool)
 }

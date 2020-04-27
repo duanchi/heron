@@ -13,6 +13,7 @@ type Config struct {
 	Feign		config.Feign `yaml:"feign"`
 	Log			config.Log `yaml:"log"`
 	Cache		config.Cache `yaml:"cache"`
+	Task		config.Task `yaml:"task"`
 	BeanParsers interface{} `yaml:"-"`
 	Beans		struct {} `yaml:"-"`
 }
