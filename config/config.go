@@ -93,11 +93,21 @@ func parseConfig (config interface{}, defaults string) {
 		for i := 0; i < configValue.NumField(); i++ {
 			if configValue.Field(i).CanInterface() {
 				switch configValue.Field(i).Type().Kind() {
-				case reflect.Ptr, reflect.Struct, reflect.Map, reflect.Slice:
+				case reflect.Ptr, reflect.Struct, reflect.Slice:
 					parseConfig(configValue.Field(i).Addr().Interface(), "")
 
+				case reflect.Map:
+					for _, key := range configValue.Field(i).MapKeys() {
+						parseConfig(configValue.Field(i).MapIndex(key).Interface(), "")
+					}
+
 				default:
-					parseConfig(configValue.Field(i).Addr().Interface(), configType.Field(i).Tag.Get("default"))
+					if configValue.Field(i).CanAddr() {
+						parseConfig(configValue.Field(i).Addr().Interface(), configType.Field(i).Tag.Get("default"))
+					} else {
+						parseConfig(configValue.Field(i).Interface(), configType.Field(i).Tag.Get("default"))
+					}
+
 				}
 			}
 		}
@@ -120,8 +130,6 @@ func parseConfig (config interface{}, defaults string) {
 
 			if configValue.IsZero() {
 				v = defaults
-
-				fmt.Println(defaults)
 
 				pattern, _ := regexp.Compile(`\${.+?}`)
 				v = pattern.ReplaceAllStringFunc(defaults, func(s string) string {
