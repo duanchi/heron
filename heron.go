@@ -10,7 +10,7 @@ import (
 var HttpServer *gin.Engine
 var Db *xorm.Engine
 var Config interface{}
-var Log *log.Logrus
+var Log *log.Logger
 var DbMap map[string]*xorm.Engine
 
 func GetBean(name string) interface{} {
