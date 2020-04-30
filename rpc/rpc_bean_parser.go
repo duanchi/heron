@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"fmt"
 	"go.heurd.com/heron-go/heron/types"
 	"reflect"
 )
@@ -19,5 +20,6 @@ func (parser RpcBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, de
 			Package  string
 			Instance reflect.Value
 		}{Package: packageName, Instance: bean}
+		fmt.Println("[Wand-Go] Init RPC: " + bean.Elem().Type().PkgPath() + "." + bean.Elem().Type().Name())
 	}
 }
