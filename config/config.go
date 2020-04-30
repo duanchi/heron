@@ -86,8 +86,6 @@ func parseConfig (config interface{}, defaults string) {
 		configValue = configValue.Elem()
 	}
 
-	/*fmt.Println("=========================")
-	fmt.Println(configType, configValue)*/
 	switch configType.Kind() {
 	case reflect.Struct:
 		for i := 0; i < configValue.NumField(); i++ {
