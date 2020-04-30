@@ -3,7 +3,7 @@ package config
 type Db struct {
 	Enabled bool `yaml:"enabled" default:"false"`
 	Dsn string	`yaml:"dsn"`
-	Sources map[string] DbConfig	`yaml:"sources"`
+	Sources map[string]DbConfig	`yaml:"sources"`
 }
 
 type DbConfig struct {

@@ -31,26 +31,42 @@ func Model(model interface{}) *ModelMapper {
 		modelType = modelType.Elem()
 	}
 
-	optionsValue := reflect.New(modelType)
-	mapper := optionsValue.Interface().(_interface.ModelInterface)
-
-	instance.Options(mapper.Options())
+	instance.Struct = reflect.New(modelType).Interface().(_interface.ModelInterface)
+	instance.Options()
 
 	return &instance
 }
 
 type ModelMapper struct {
 	Mapper interface{}
+	Struct _interface.ModelInterface
 	options map[string]interface{}
 	engine *xorm.Engine
 }
 
-func (this *ModelMapper) Options (options map[string]interface{}) {
-	if options["source"] != nil {
-		this.SetSource(options["source"].(string))
+// func (this *ModelMapper) Options (options map[string]interface{}) {
+func (this *ModelMapper) Options () {
+	source := this.Struct.Source()
+	table := this.Struct.Table()
+
+	if source == "" {
+		source = "default"
+	}
+	this.SetSource(source)
+
+	if table != "" {
+		this.options["table"] = table
+	}
+	/*this.options = options
+	if v, ok := options["source"]; ok {
+		this.SetSource(v.(string))
 	} else {
 		this.SetSource("default")
 	}
+
+	if v, ok := options["table"]; ok {
+		this.engine.Table(v)
+	}*/
 }
 
 func (this *ModelMapper) NewMapper () interface{} {
@@ -66,7 +82,7 @@ func (this *ModelMapper) NewMapper () interface{} {
 }
 
 func (this *ModelMapper) Init() *ModelMapper {
-	this.Options(map[string]interface{}{})
+	this.Options()
 	return this
 }
 
@@ -235,17 +251,21 @@ func (this *ModelMapper) Dialect() dialects.Dialect {
 
 // NewSession New a session
 func (this *ModelMapper) NewSession() *xorm.Session {
-	return this.engine.NewSession()
+	if table, ok := this.options["table"]; ok {
+		return this.engine.NewSession().Table(table)
+	} else {
+		return this.engine.NewSession()
+	}
 }
 
 // Close the engine
 func (this *ModelMapper) Close() error {
-	return this.engine.Close()
+	return this.NewSession().Close()
 }
 
 // Ping tests if database is alive
 func (this *ModelMapper) Ping() error {
-	return this.engine.Ping()
+	return this.NewSession().Ping()
 }
 
 // SQL method let's you manually write raw SQL and operate
@@ -255,7 +275,7 @@ func (this *ModelMapper) Ping() error {
 //
 // This    code will execute "select * from user" and set the records to users
 func (this *ModelMapper) SQL(query interface{}, args ...interface{}) *xorm.Session {
-	return this.engine.SQL(query, args...)
+	return this.NewSession().SQL(query, args...)
 }
 
 // NoAutoTime Default if your struct has "created" or "updated" filed tag, the fields
@@ -297,68 +317,68 @@ func (this *ModelMapper) DumpTables(tables []*schemas.Table, w io.Writer, tp ...
 
 // Cascade use cascade or not
 func (this *ModelMapper) Cascade(trueOrFalse ...bool) *xorm.Session {
-	return this.engine.Cascade(trueOrFalse...)
+	return this.NewSession().Cascade(trueOrFalse...)
 }
 
 // Where method provide a condition query
 func (this *ModelMapper) Where(query interface{}, args ...interface{}) *xorm.Session {
-	return this.engine.Where(query, args...)
+	return this.NewSession().Where(query, args...)
 }
 
 // ID method provoide a condition as (id) = ?
 func (this *ModelMapper) ID(id interface{}) *xorm.Session {
-	return this.engine.ID(id)
+	return this.NewSession().ID(id)
 }
 
 func (this *ModelMapper) Id(id interface{}) *xorm.Session {
-	return this.engine.ID(id)
+	return this.NewSession().ID(id)
 }
 
 // Before apply before Processor, affected bean is passed to closure arg
 func (this *ModelMapper) Before(closures func(interface{})) *xorm.Session {
-	return this.engine.Before(closures)
+	return this.NewSession().Before(closures)
 }
 
 // After apply after insert Processor, affected bean is passed to closure arg
 func (this *ModelMapper) After(closures func(interface{})) *xorm.Session {
-	return this.engine.After(closures)
+	return this.NewSession().After(closures)
 }
 
 // Charset set charset when create table, only support mysql now
 func (this *ModelMapper) Charset(charset string) *xorm.Session {
-	return this.engine.Charset(charset)
+	return this.NewSession().Charset(charset)
 }
 
 // StoreEngine set store engine when create table, only support mysql now
 func (this *ModelMapper) StoreEngine(storeEngine string) *xorm.Session {
-	return this.engine.StoreEngine(storeEngine)
+	return this.NewSession().StoreEngine(storeEngine)
 }
 
 // Distinct use for distinct columns. Caution: when you are using cache,
 // distinct will not be cached because cache system need id,
 // but distinct will not provide id
 func (this *ModelMapper) Distinct(columns ...string) *xorm.Session {
-	return this.engine.Distinct(columns...)
+	return this.NewSession().Distinct(columns...)
 }
 
 // Select customerize your select columns or contents
 func (this *ModelMapper) Select(str string) *xorm.Session {
-	return this.engine.Select(str)
+	return this.NewSession().Select(str)
 }
 
 // Cols only use the parameters as select or update columns
 func (this *ModelMapper) Cols(columns ...string) *xorm.Session {
-	return this.engine.Cols(columns...)
+	return this.NewSession().Cols(columns...)
 }
 
 // AllCols indicates that all columns should be use
 func (this *ModelMapper) AllCols() *xorm.Session {
-	return this.engine.AllCols()
+	return this.NewSession().AllCols()
 }
 
 // MustCols specify some columns must use even if they are empty
 func (this *ModelMapper) MustCols(columns ...string) *xorm.Session {
-	return this.engine.MustCols(columns...)
+	return this.NewSession().MustCols(columns...)
 }
 
 // UseBool xorm automatically retrieve condition according struct, but
@@ -367,42 +387,42 @@ func (this *ModelMapper) MustCols(columns ...string) *xorm.Session {
 // If no parameters, it will use all the bool field of struct, or
 // it will use parameters's columns
 func (this *ModelMapper) UseBool(columns ...string) *xorm.Session {
-	return this.engine.UseBool(columns...)
+	return this.NewSession().UseBool(columns...)
 }
 
 // Omit only not use the parameters as select or update columns
 func (this *ModelMapper) Omit(columns ...string) *xorm.Session {
-	return this.engine.Omit(columns...)
+	return this.NewSession().Omit(columns...)
 }
 
 // Nullable set null when column is zero-value and nullable for update
 func (this *ModelMapper) Nullable(columns ...string) *xorm.Session {
-	return this.engine.Nullable(columns...)
+	return this.NewSession().Nullable(columns...)
 }
 
 // In will generate "column IN (?, ?)"
 func (this *ModelMapper) In(column string, args ...interface{}) *xorm.Session {
-	return this.engine.In(column, args...)
+	return this.NewSession().In(column, args...)
 }
 
 // NotIn will generate "column NOT IN (?, ?)"
 func (this *ModelMapper) NotIn(column string, args ...interface{}) *xorm.Session {
-	return this.engine.NotIn(column, args...)
+	return this.NewSession().NotIn(column, args...)
 }
 
 // Incr provides a update string like "column = column + ?"
 func (this *ModelMapper) Incr(column string, args ...interface{}) *xorm.Session {
-	return this.engine.Incr(column, args...)
+	return this.NewSession().Incr(column, args...)
 }
 
 // Decr provides a update string like "column = column - ?"
 func (this *ModelMapper) Decr(column string, args ...interface{}) *xorm.Session {
-	return this.engine.Decr(column, args...)
+	return this.NewSession().Decr(column, args...)
 }
 
 // SetExpr provides a update string like "column = {expression}"
 func (this *ModelMapper) SetExpr(column string, expression interface{}) *xorm.Session {
-	return this.engine.SetExpr(column, expression)
+	return this.NewSession().SetExpr(column, expression)
 }
 
 // Table temporarily change the Get, Find, Update's table
@@ -412,17 +432,17 @@ func (this *ModelMapper) Table(tableNameOrBean interface{}) *xorm.Session {
 
 // Alias set the table alias
 func (this *ModelMapper) Alias(alias string) *xorm.Session {
-	return this.engine.Alias(alias)
+	return this.NewSession().Alias(alias)
 }
 
 // Limit will generate "LIMIT start, limit"
 func (this *ModelMapper) Limit(limit int, start ...int) *xorm.Session {
-	return this.engine.Limit(limit, start...)
+	return this.NewSession().Limit(limit, start...)
 }
 
 // Desc will generate "ORDER BY column1 DESC, column2 DESC"
 func (this *ModelMapper) Desc(colNames ...string) *xorm.Session {
-	return this.engine.Desc(colNames...)
+	return this.NewSession().Desc(colNames...)
 }
 
 // Asc will generate "ORDER BY column1,column2 Asc"
@@ -432,32 +452,32 @@ func (this *ModelMapper) Desc(colNames ...string) *xorm.Session {
 //        // SELECT * FROM user ORDER BY name DESC, age ASC
 //
 func (this *ModelMapper) Asc(colNames ...string) *xorm.Session {
-	return this.engine.Asc(colNames...)
+	return this.NewSession().Asc(colNames...)
 }
 
 // OrderBy will generate "ORDER BY order"
 func (this *ModelMapper) OrderBy(order string) *xorm.Session {
-	return this.engine.OrderBy(order)
+	return this.NewSession().OrderBy(order)
 }
 
 // Prepare enables prepare statement
 func (this *ModelMapper) Prepare() *xorm.Session {
-	return this.engine.Prepare()
+	return this.NewSession().Prepare()
 }
 
 // Join the join_operator should be one of INNER, LEFT OUTER, CROSS etc - this will be prepended to JOIN
 func (this *ModelMapper) Join(joinOperator string, tablename interface{}, condition string, args ...interface{}) *xorm.Session {
-	return this.engine.Join(joinOperator, tablename, condition, args...)
+	return this.NewSession().Join(joinOperator, tablename, condition, args...)
 }
 
 // GroupBy generate group by statement
 func (this *ModelMapper) GroupBy(keys string) *xorm.Session {
-	return this.engine.GroupBy(keys)
+	return this.NewSession().GroupBy(keys)
 }
 
 // Having generate having statement
 func (this *ModelMapper) Having(conditions string) *xorm.Session {
-	return this.engine.Having(conditions)
+	return this.NewSession().Having(conditions)
 }
 
 // TableInfo get table info according to bean's content
@@ -467,12 +487,12 @@ func (this *ModelMapper) TableInfo(bean interface{}) (*schemas.Table, error) {
 
 // IsTableEmpty if a table has any reocrd
 func (this *ModelMapper) IsTableEmpty(bean interface{}) (bool, error) {
-	return this.engine.IsTableEmpty(bean)
+	return this.NewSession().IsTableEmpty(bean)
 }
 
 // IsTableExist if a table is exist
 func (this *ModelMapper) IsTableExist(beanOrTableName interface{}) (bool, error) {
-	return this.engine.IsTableExist(beanOrTableName)
+	return this.NewSession().IsTableExist(beanOrTableName)
 }
 
 // IDOf get id from one struct
@@ -487,17 +507,17 @@ func (this *ModelMapper) TableName(bean interface{}, includeSchema ...bool) stri
 
 // IDOfV get id from one value of struct
 func (this *ModelMapper) IDOfV(rv reflect.Value) (schemas.PK, error) {
-	return this.engine.IDOf(rv)
+	return this.engine.IDOfV(rv)
 }
 
 // CreateIndexes create indexes
 func (this *ModelMapper) CreateIndexes(bean interface{}) error {
-	return this.engine.CreateIndexes(bean)
+	return this.NewSession().CreateIndexes(bean)
 }
 
 // CreateUniques create uniques
 func (this *ModelMapper) CreateUniques(bean interface{}) error {
-	return this.engine.CreateUniques(bean)
+	return this.NewSession().CreateUniques(bean)
 }
 
 // ClearCacheBean if enabled cache, clear the cache bean
@@ -539,47 +559,47 @@ func (this *ModelMapper) DropTables(beans ...interface{}) error {
 
 // DropIndexes drop indexes of a table
 func (this *ModelMapper) DropIndexes(bean interface{}) error {
-	return this.engine.DropIndexes(bean)
+	return this.NewSession().DropIndexes(bean)
 }
 
 // Exec raw sql
 func (this *ModelMapper) Exec(sqlOrArgs ...interface{}) (sql.Result, error) {
-	return this.engine.Exec(sqlOrArgs ...)
+	return this.NewSession().Exec(sqlOrArgs ...)
 }
 
 // Query a raw sql and return records as []map[string][]byte
 func (this *ModelMapper) QueryBytes(sqlOrArgs ...interface{}) (resultsSlice []map[string][]byte, err error) {
-	return this.engine.QueryBytes(sqlOrArgs...)
+	return this.NewSession().QueryBytes(sqlOrArgs...)
 }
 
 // Query a raw sql and return records as []map[string]Value
 func (this *ModelMapper) QueryValue(sqlOrArgs ...interface{}) (resultsSlice []map[string]xorm.Value, err error) {
-	return this.engine.QueryValue(sqlOrArgs...)
+	return this.NewSession().QueryValue(sqlOrArgs...)
 }
 
 // Query a raw sql and return records as Result
 func (this *ModelMapper) QueryResult(sqlOrArgs ...interface{}) (result *xorm.ResultValue) {
-	return this.engine.QueryResult(sqlOrArgs...)
+	return this.NewSession().QueryResult(sqlOrArgs...)
 }
 
 // QueryString runs a raw sql and return records as []map[string]string
 func (this *ModelMapper) QueryString(sqlOrArgs ...interface{}) ([]map[string]string, error) {
-	return this.engine.QueryString(sqlOrArgs...)
+	return this.NewSession().QueryString(sqlOrArgs...)
 }
 
 // QueryInterface runs a raw sql and return records as []map[string]interface{}
 func (this *ModelMapper) QueryInterface(sqlOrArgs ...interface{}) ([]map[string]interface{}, error) {
-	return this.engine.QueryInterface(sqlOrArgs...)
+	return this.NewSession().QueryInterface(sqlOrArgs...)
 }
 
 // Insert one or more records
 func (this *ModelMapper) Insert(beans ...interface{}) (int64, error) {
-	return this.engine.Insert(this.Mapper.([]interface{})...)
+	return this.NewSession().Insert(this.Mapper.([]interface{})...)
 }
 
 // InsertOne insert only one record
 func (this *ModelMapper) InsertOne() (int64, error) {
-	return this.engine.InsertOne(this.Mapper)
+	return this.NewSession().InsertOne(this.Mapper)
 }
 
 // Update records, bean's non-empty fields are updated contents,
@@ -589,83 +609,82 @@ func (this *ModelMapper) InsertOne() (int64, error) {
 //         You should call UseBool if you have bool to use.
 //        2.float32 & float64 may be not inexact as conditions
 func (this *ModelMapper) Update(condiBeans ...interface{}) (int64, error) {
-	return this.engine.Update(this.Mapper, condiBeans...)
+	return this.NewSession().Update(this.Mapper, condiBeans...)
 }
 
 // Delete records, bean's non-empty fields are conditions
 func (this *ModelMapper) Delete() (int64, error) {
-	return this.engine.Delete(this.Mapper)
+	return this.NewSession().Delete(this.Mapper)
 }
 
 // Get retrieve one record from table, bean's non-empty fields
 // are conditions
 func (this *ModelMapper) Get() (bool, error) {
-	return this.engine.Get(this.Mapper)
+	return this.NewSession().Get(this.Mapper)
 }
 
 // Exist returns true if the record exist otherwise return false
 func (this *ModelMapper) Exist() (bool, error) {
-	return this.engine.Exist(this.Mapper)
+	return this.NewSession().Exist(this.Mapper)
 }
 
 // Find retrieve records from table, condiBeans's non-empty fields
 // are conditions. beans could be []Struct, []*Struct, map[int64]Struct
 // map[int64]*Struct
 func (this *ModelMapper) Find(condiBeans ...interface{}) error {
-	bean := this.NewMapper()
-	return this.engine.Find(bean, condiBeans...)
+	return this.NewSession().Find(this.Mapper, condiBeans...)
 }
 
 // FindAndCount find the results and also return the counts
-func (this *ModelMapper) FindAndCount(rowsSlicePtr interface{}, condiBean ...interface{}) (int64, error) {
-	return this.engine.FindAndCount(rowsSlicePtr, condiBean...)
+func (this *ModelMapper) FindAndCount(condiBean ...interface{}) (int64, error) {
+	return this.NewSession().FindAndCount(this.Mapper, condiBean...)
 }
 
 // Iterate record by record handle records from table, bean's non-empty fields
 // are conditions.
 func (this *ModelMapper) Iterate(fun xorm.IterFunc) error {
-	return this.engine.Iterate(this.Mapper, fun)
+	return this.NewSession().Iterate(this.Mapper, fun)
 }
 
 // Rows return sql.Rows compatible Rows obj, as a forward Iterator object for iterating record by record, bean's non-empty fields
 // are conditions.
 func (this *ModelMapper) Rows() (*xorm.Rows, error) {
-	return this.engine.Rows(this.Mapper)
+	return this.NewSession().Rows(this.Mapper)
 }
 
 // Count counts the records. bean's non-empty fields are conditions.
 func (this *ModelMapper) Count() (int64, error) {
-	return this.engine.Count(this.Mapper)
+	return this.NewSession().Count(this.Mapper)
 }
 
 // Sum sum the records by some column. bean's non-empty fields are conditions.
 func (this *ModelMapper) Sum(colName string) (float64, error) {
-	return this.engine.Sum(this.Mapper, colName)
+	return this.NewSession().Sum(this.Mapper, colName)
 }
 
 // SumInt sum the records by some column. bean's non-empty fields are conditions.
 func (this *ModelMapper) SumInt(colName string) (int64, error) {
-	return this.engine.SumInt(this.Mapper, colName)
+	return this.NewSession().SumInt(this.Mapper, colName)
 }
 
 // Sums sum the records by some columns. bean's non-empty fields are conditions.
 func (this *ModelMapper) Sums(colNames ...string) ([]float64, error) {
-	return this.engine.Sums(this.Mapper, colNames...)
+	return this.NewSession().Sums(this.Mapper, colNames...)
 }
 
 // SumsInt like Sums but return slice of int64 instead of float64.
 func (this *ModelMapper) SumsInt(colNames ...string) ([]int64, error) {
-	return this.engine.SumsInt(this.Mapper, colNames...)
+	return this.NewSession().SumsInt(this.Mapper, colNames...)
 }
 
 // ImportFile SQL DDL file
 func (this *ModelMapper) ImportFile(ddlPath string) ([]sql.Result, error) {
-	return this.engine.ImportFile(ddlPath)
+	return this.NewSession().ImportFile(ddlPath)
 }
 
 // Import SQL DDL from io.Reader
 func (this *ModelMapper) Import(r io.Reader) ([]sql.Result, error) {
-	return this.engine.Import(r)
+	return this.NewSession().Import(r)
 }
 
 // GetColumnMapper returns the column name mapper
