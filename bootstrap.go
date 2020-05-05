@@ -3,6 +3,7 @@ package heron
 import (
 	"fmt"
 	"go.heurd.com/heron-go/heron/bean"
+	"go.heurd.com/heron-go/heron/cache"
 	"go.heurd.com/heron-go/heron/config"
 	"go.heurd.com/heron-go/heron/db"
 	"go.heurd.com/heron-go/heron/feign"
@@ -40,6 +41,10 @@ func Bootstrap(configuration interface{}) {
 	if checkConfigEnabled("Db.Enabled") {
 		db.Init()
 		Db = db.Connection
+	}
+
+	if checkConfigEnabled("Cache.Enabled") {
+		cache.Init()
 	}
 
 	if checkConfigEnabled("Feign.Enabled") {

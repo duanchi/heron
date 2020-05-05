@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/muesli/cache2go"
+	"github.com/patrickmn/go-cache"
 	"go.heurd.com/heron-go/heron/abstract"
 	"net/url"
 	"time"
@@ -9,7 +9,7 @@ import (
 
 type MemoryCache struct {
 	abstract.Bean
-	instance *cache2go.CacheTable
+	instance *cache.Cache
 }
 
 func (this *MemoryCache) Init() {
@@ -17,35 +17,31 @@ func (this *MemoryCache) Init() {
 }
 
 func (this *MemoryCache) Instance(dsn *url.URL) {
-	this.instance = cache2go.Cache(dsn.Hostname())
+	this.instance = cache.New(cache.NoExpiration, 1 * time.Minute)
+	// this.instance = cache2go.Cache(dsn.Hostname())
 }
 
-func (this *MemoryCache) Get(key string) interface{} {
-	result, err := this.instance.Value(key)
-
-	if err != nil {
-		return result
-	}
-
-	return nil
+func (this *MemoryCache) Get(key string) (value interface{}) {
+	value, _ = this.instance.Get(key)
+	return
 }
 
 func (this *MemoryCache) Has(key string) bool {
-	_, err := this.instance.Value(key)
+	_, has := this.instance.Get(key)
 
-	if err != nil {
-		return true
-	}
-
-	return false
+	return has
 }
 
-func (this *MemoryCache) Set(key string, value interface{}, ttl int) {
+func (this *MemoryCache) Set(key string, value interface{}) {
+	this.instance.Set(key, value, cache.NoExpiration)
+}
+
+func (this *MemoryCache) SetWithTTL(key string, value interface{}, ttl int) {
 	if ttl <= 0 {
 		ttl = 0
 	}
 
-	this.instance.Add(key, time.Duration(ttl) * time.Second, &value)
+	this.instance.Set(key, &value, time.Duration(ttl) * time.Second)
 }
 
 func (this *MemoryCache) Del(key string) {
