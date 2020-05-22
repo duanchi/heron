@@ -15,11 +15,15 @@ func (parser RpcBeanParser) Parse (tag reflect.StructTag, bean reflect.Value, de
 	rpc := tag.Get("rpc")
 	packageName := tag.Get("package")
 
+	if packageName == "" {
+		packageName = bean.Elem().Type().PkgPath()
+	}
+
 	if rpc != "" {
-		RpcBeans[bean.Elem().Type().PkgPath() + "." + bean.Elem().Type().Name()] = struct {
+		RpcBeans[packageName + "." + bean.Elem().Type().Name()] = struct {
 			Package  string
 			Instance reflect.Value
 		}{Package: packageName, Instance: bean}
-		fmt.Println("[Wand-Go] Init RPC: " + bean.Elem().Type().PkgPath() + "." + bean.Elem().Type().Name())
+		fmt.Println("[Wand-Go] Init RPC: " + packageName + "." + bean.Elem().Type().Name())
 	}
 }
