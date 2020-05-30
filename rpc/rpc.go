@@ -21,7 +21,7 @@ var RpcBeans = RpcBeanMap{}
 func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 	prefix := config.Get("Rpc.Server.Prefix").(string)
 
-	httpServer.POST(prefix + "/*rpc_path", middleware.HandleAfterRoute, func(ctx *gin.Context) {
+	httpServer.POST(prefix + "/rpc/*caller", middleware.HandleAfterRoute, func(ctx *gin.Context) {
 
 		defer func() {
 			runtimeErr := recover()
@@ -47,7 +47,7 @@ func (this RpcBeanMap) Init (httpServer *gin.Engine) {
 			}
 		}()
 
-		pathStack := strings.SplitN(ctx.Request.URL.Path[len(prefix) + 1:], "::", 2)
+		pathStack := strings.SplitN(ctx.Param("caller")[len(prefix) + 1:], "::", 2)
 
 		beanName := pathStack[0]
 		methodName := pathStack[1]
