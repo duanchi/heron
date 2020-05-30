@@ -25,7 +25,7 @@ func (this *RedisCache) Instance(dsn *url.URL) {
 	if pathString == "" || pathString == "/" {
 		pathString = "0"
 	}
-	path, _ := strconv.Atoi(dsn.Path)
+	path, _ := strconv.Atoi(pathString)
 	this.instance = redis.NewClient(&redis.Options{
 		Addr:     dsn.Host,
 		Password: password, // no password set
