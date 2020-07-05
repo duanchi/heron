@@ -3,8 +3,9 @@ package db
 import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/xormplus/xorm"
 	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
+	"github.com/xormplus/xorm"
 	"go.heurd.com/heron-go/heron/config"
 	config2 "go.heurd.com/heron-go/heron/types/config"
 	"log"
@@ -25,7 +26,7 @@ func Init () {
 		Connections = map[string]*xorm.Engine{}
 		for name, sourceConfig := range sources {
 			parsedDsn, _ := url.Parse(sourceConfig.Dsn)
-			Connections[name], err = connect(parsedDsn)
+			Connections[name], err = connect(parsedDsn, sourceConfig.Dsn)
 			fmt.Println("Data Source [" + name + "] Inited!")
 			if err != nil {
 				fmt.Println(err.Error())
@@ -37,7 +38,7 @@ func Init () {
 		}
 	} else {
 		parsedDsn, _ := url.Parse(config.Get("Db.Dsn").(string))
-		Connection, err = connect(parsedDsn)
+		Connection, err = connect(parsedDsn, config.Get("Db.Dsn").(string))
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -50,12 +51,12 @@ func Engine (name string) *xorm.Engine {
 
 func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
 	parsedDsn, _ := url.Parse(sourceConfig.Dsn)
-	Connections[name], err = connect(parsedDsn)
+	Connections[name], err = connect(parsedDsn, sourceConfig.Dsn)
 
 	return err
 }
 
-func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
+func connect (dsnUrl *url.URL, rawUrl string) (connection *xorm.Engine, err error) {
 
 	defer func() {
 		e := recover()
@@ -144,10 +145,21 @@ func connect (dsnUrl *url.URL) (connection *xorm.Engine, err error) {
 			log.Fatal(err)
 			return
 		}
+
+	case "sqlite":
+
+		connection, err = xorm.NewEngine("mysql", rawUrl[9:])
+		err = connection.Ping()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	}
 
 	fmt.Println("connect database success!")
-	connection.ShowSQL()
+	if config.Get("Env").(string) == "development" {
+		connection.ShowSQL()
+	}
 
 	return
 }

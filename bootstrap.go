@@ -2,6 +2,7 @@ package heron
 
 import (
 	"fmt"
+	_ "github.com/joho/godotenv/autoload"
 	"go.heurd.com/heron-go/heron/bean"
 	"go.heurd.com/heron-go/heron/cache"
 	"go.heurd.com/heron-go/heron/config"

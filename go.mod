@@ -17,11 +17,13 @@ require (
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-playground/validator v9.30.0+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
-	// github.com/go-xorm/xorm v0.7.9
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gorilla/websocket v1.4.2
+	github.com/joho/godotenv v1.3.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0
+	// github.com/go-xorm/xorm v0.7.9
+	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
