@@ -23,11 +23,11 @@ require (
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.2.0
 	// github.com/go-xorm/xorm v0.7.9
-	github.com/mattn/go-sqlite3 v1.10.0
+	// github.com/mattn/go-sqlite3 v1.10.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
-	github.com/syndtr/goleveldb v1.0.0 // indirect
+	// github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	github.com/xormplus/builder v0.0.0-20200331055651-240ff40009be // indirect
 	github.com/xormplus/xorm v0.0.0-20200410045938-f6b4c1cd3b8b

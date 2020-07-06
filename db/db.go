@@ -4,7 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
+	// _ "github.com/mattn/go-sqlite3"
 	"github.com/xormplus/xorm"
 	"go.heurd.com/heron-go/heron/config"
 	config2 "go.heurd.com/heron-go/heron/types/config"
@@ -26,7 +26,7 @@ func Init () {
 		Connections = map[string]*xorm.Engine{}
 		for name, sourceConfig := range sources {
 			parsedDsn, _ := url.Parse(sourceConfig.Dsn)
-			Connections[name], err = connect(parsedDsn, sourceConfig.Dsn)
+			Connections[name], err = connect(parsedDsn, sourceConfig)
 			fmt.Println("Data Source [" + name + "] Inited!")
 			if err != nil {
 				fmt.Println(err.Error())
@@ -38,7 +38,10 @@ func Init () {
 		}
 	} else {
 		parsedDsn, _ := url.Parse(config.Get("Db.Dsn").(string))
-		Connection, err = connect(parsedDsn, config.Get("Db.Dsn").(string))
+		Connection, err = connect(parsedDsn, config2.DbConfig{
+			Dsn:       	config.Get("Db.Dsn").(string),
+			MigrateSQL: config.Get("Db.MigrateSQL").(string),
+		})
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -51,12 +54,12 @@ func Engine (name string) *xorm.Engine {
 
 func NewEngine(name string, sourceConfig config2.DbConfig) (err error) {
 	parsedDsn, _ := url.Parse(sourceConfig.Dsn)
-	Connections[name], err = connect(parsedDsn, sourceConfig.Dsn)
+	Connections[name], err = connect(parsedDsn, sourceConfig)
 
 	return err
 }
 
-func connect (dsnUrl *url.URL, rawUrl string) (connection *xorm.Engine, err error) {
+func connect (dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engine, err error) {
 
 	defer func() {
 		e := recover()
@@ -146,14 +149,21 @@ func connect (dsnUrl *url.URL, rawUrl string) (connection *xorm.Engine, err erro
 			return
 		}
 
-	case "sqlite":
+	/*case "sqlite":
 
-		connection, err = xorm.NewEngine("mysql", rawUrl[9:])
+		connection, err = xorm.NewEngine("sqlite3", dbConfig.Dsn[9:])
 		err = connection.Ping()
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
+		sql, readErr := ioutil.ReadFile(dbConfig.MigrateSQL)
+		if readErr != nil {
+			log.Fatal(readErr)
+			return
+		}
+		fmt.Println(connection.Import(bytes.NewReader(sql)))
+		*/
 	}
 
 	fmt.Println("connect database success!")
