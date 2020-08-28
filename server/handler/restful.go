@@ -16,10 +16,14 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	params := ctx.Params
 	id := ctx.Param("id")
 	method := ctx.Request.Method
-	requestId := uuid.NewV4().String()
+	requestId := ctx.Request.Header.Get("Request-Id")
+	if requestId == "" {
+		requestId = uuid.NewV4().String()
+	}
 	response := types.Response{
 		RequestId: requestId,
 		Status: false,
+		Code: -1,
 		Data: nil,
 		Message: "Ok",
 	}
@@ -29,16 +33,9 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 
 		if exception := recover(); exception != nil {
 			defer func() {
-				/*if err := recover(); err != nil {
-					response.Message = fmt.Sprint(exception)
-				}
-				if ctx.Writer.Status() != http.StatusOK {
+				/*if ctx.Writer.Status() != http.StatusOK {
 					statusCode = ctx.Writer.Status()
-				}
-				ctx.Writer.Header().Set("Content-Type", "application/json")*/
-				if ctx.Writer.Status() != http.StatusOK {
-					statusCode = ctx.Writer.Status()
-				}
+				}*/
 				ctx.JSON(statusCode, response)
 				debug.PrintStack()
 			}()
@@ -48,9 +45,36 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 
 			if implemented {
 				runtimeError := reflect.ValueOf(exception).Interface().(types.Error)
+				/*switch exception.(type) {
+
+				case error2.RequestError:
+					statusCode = http.StatusBadRequest
+
+				case error2.ResponseError:
+					statusCode = http.StatusInternalServerError
+
+				case error2.AuthorizeError:
+					statusCode = http.StatusUnauthorized
+
+				case error2.ForbiddenError:
+					statusCode = http.StatusForbidden
+
+				case error2.NotFoundError:
+					statusCode = http.StatusNotFound
+
+				default:
+					if runtimeError.Code() < 600 {
+						statusCode = runtimeError.Code()
+					} else {
+						statusCode = 500
+					}
+				}*/
+
+				statusCode = runtimeError.Status()
 				response.Message = runtimeError.Error()
-				statusCode = runtimeError.Code()
 				response.Data = runtimeError.Data()
+				response.Code = runtimeError.Code()
+
 			} else {
 				commonError := reflect.ValueOf(exception).Interface().(error)
 				response.Message = commonError.Error()
@@ -92,7 +116,19 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	if err == nil {
 		response.Status = true
 		response.Data = data
-		ctx.JSON(http.StatusOK, response)
+		response.Code = 0
+		status := http.StatusOK
+		switch method {
+		case "GET":
+			status = 200
+		case "POST":
+			status = 201
+		case "PUT":
+			status = 201
+		case "DELETE":
+			status = 204
+		}
+		ctx.JSON(status, response)
 	} else {
 		panic(err)
 	}
