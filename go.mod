@@ -1,4 +1,4 @@
-module go.heurd.com/heron-go/heron
+module github.com/duanchi/heron
 
 go 1.13
 
