@@ -1,6 +1,6 @@
 package config
 
-import "go.heurd.com/heron-go/heron/types/config/feign"
+import "github.com/duanchi/heron/types/config/feign"
 
 type Feign struct {
 	Enabled bool `yaml:"enabled" default:"false"`

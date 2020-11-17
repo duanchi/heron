@@ -1,7 +1,7 @@
 package task
 
 import (
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/types"
 	"reflect"
 	"strconv"
 )

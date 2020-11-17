@@ -2,8 +2,8 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.heurd.com/heron-go/heron/config"
-	"go.heurd.com/heron-go/heron/rpc"
+	"github.com/duanchi/heron/config"
+	"github.com/duanchi/heron/rpc"
 )
 
 func Init(httpServer *gin.Engine) {

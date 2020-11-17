@@ -1,7 +1,7 @@
 package feign
 
 import (
-	"go.heurd.com/heron-go/heron/types/config/feign"
+	"github.com/duanchi/heron/types/config/feign"
 	"log"
 	"strings"
 	"time"

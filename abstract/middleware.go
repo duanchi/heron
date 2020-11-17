@@ -2,7 +2,7 @@ package abstract
 
 import (
 	"github.com/gin-gonic/gin"
-	_interface "go.heurd.com/heron-go/heron/interface"
+	_interface "github.com/duanchi/heron/interface"
 )
 
 type Middleware struct {

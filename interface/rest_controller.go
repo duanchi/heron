@@ -2,7 +2,7 @@ package _interface
 
 import (
 	"github.com/gorilla/websocket"
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/types"
 	"github.com/gin-gonic/gin"
 )
 

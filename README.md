@@ -6,7 +6,7 @@ wand-go 支持`go mod`初始化
 
 ```
 require (
-	go.heurd.com/heron-go/heron v1.2.1
+	github.com/duanchi/heron v1.2.1
 )
 ```
 
@@ -16,12 +16,12 @@ require (
 
 ### 配置结构体
 
-项目中所有的配置可以通过定义一个`struct`类型的变量, 并由config/application.yaml填充配置项内容, 该变量可以引用`go.heurd.com/heron-go/heron/types`下的`Config`结构体进行组合。
+项目中所有的配置可以通过定义一个`struct`类型的变量, 并由config/application.yaml填充配置项内容, 该变量可以引用`github.com/duanchi/heron/types`下的`Config`结构体进行组合。
 
 ```go
 package config
 
-import "go.heurd.com/heron-go/heron/types"
+import "github.com/duanchi/heron/types"
 
 var Config = struct {
 	types.Config	`yaml:",inline"`

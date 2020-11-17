@@ -2,10 +2,10 @@ package rpc
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.heurd.com/heron-go/heron/config"
-	_interface "go.heurd.com/heron-go/heron/interface"
-	"go.heurd.com/heron-go/heron/server/middleware"
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/config"
+	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/server/middleware"
+	"github.com/duanchi/heron/types"
 	"net/http"
 	"reflect"
 	"strings"

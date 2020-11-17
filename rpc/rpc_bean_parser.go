@@ -2,7 +2,7 @@ package rpc
 
 import (
 	"fmt"
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/types"
 	"reflect"
 )
 

@@ -1,7 +1,7 @@
 package task
 
 import (
-	_interface "go.heurd.com/heron-go/heron/interface"
+	_interface "github.com/duanchi/heron/interface"
 	"reflect"
 )
 

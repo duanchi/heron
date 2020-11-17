@@ -2,8 +2,8 @@ package config
 
 import (
 	"fmt"
-	"go.heurd.com/heron-go/heron/config/yaml"
-	"go.heurd.com/heron-go/heron/util"
+	"github.com/duanchi/heron/config/yaml"
+	"github.com/duanchi/heron/util"
 	"reflect"
 	"regexp"
 	"strconv"

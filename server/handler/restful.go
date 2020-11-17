@@ -3,9 +3,9 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
-	_interface "go.heurd.com/heron-go/heron/interface"
-	"go.heurd.com/heron-go/heron/server/websocket"
-	"go.heurd.com/heron-go/heron/types"
+	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/server/websocket"
+	"github.com/duanchi/heron/types"
 	"net/http"
 	"reflect"
 	"runtime/debug"

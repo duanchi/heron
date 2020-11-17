@@ -1,7 +1,7 @@
 package types
 
 import (
-	"go.heurd.com/heron-go/heron/types/config"
+	"github.com/duanchi/heron/types/config"
 	"reflect"
 )
 

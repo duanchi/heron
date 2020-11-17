@@ -2,11 +2,11 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.heurd.com/heron-go/heron/config"
-	"go.heurd.com/heron-go/heron/server/middleware"
-	"go.heurd.com/heron-go/heron/server/route"
-	"go.heurd.com/heron-go/heron/server/static"
-	"go.heurd.com/heron-go/heron/server/validate"
+	"github.com/duanchi/heron/config"
+	"github.com/duanchi/heron/server/middleware"
+	"github.com/duanchi/heron/server/route"
+	"github.com/duanchi/heron/server/static"
+	"github.com/duanchi/heron/server/validate"
 	"log"
 )
 

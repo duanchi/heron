@@ -11,7 +11,7 @@ import (
 	"github.com/xormplus/xorm/log"
 	"github.com/xormplus/xorm/names"
 	"github.com/xormplus/xorm/schemas"
-	_interface "go.heurd.com/heron-go/heron/interface"
+	_interface "github.com/duanchi/heron/interface"
 	"io"
 	"reflect"
 	"strings"

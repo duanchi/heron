@@ -3,7 +3,7 @@ package reflec
 import (
 	"errors"
 	"fmt"
-	"go.heurd.com/heron-go/heron/common"
+	"github.com/duanchi/heron/common"
 	"reflect"
 )
 

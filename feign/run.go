@@ -1,8 +1,8 @@
 package feign
 
 import (
-	"go.heurd.com/heron-go/heron/feign/reflec"
-	"go.heurd.com/heron-go/heron/types/config"
+	"github.com/duanchi/heron/feign/reflec"
+	"github.com/duanchi/heron/types/config"
 )
 var services = make(map[string]*ServiceToken)
 var Engin *reflec.Proxy

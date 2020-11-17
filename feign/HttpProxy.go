@@ -1,7 +1,7 @@
 package feign
 
 import (
-	"go.heurd.com/heron-go/heron/feign/reflec"
+	"github.com/duanchi/heron/feign/reflec"
 	"log"
 )
 

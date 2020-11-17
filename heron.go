@@ -3,8 +3,8 @@ package heron
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/xormplus/xorm"
-	"go.heurd.com/heron-go/heron/bean"
-	"go.heurd.com/heron-go/heron/log"
+	"github.com/duanchi/heron/bean"
+	"github.com/duanchi/heron/log"
 )
 
 var HttpServer *gin.Engine

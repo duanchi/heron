@@ -3,7 +3,7 @@ package redis
 import (
 	"fmt"
 	"github.com/go-redis/redis/v7"
-	"go.heurd.com/heron-go/heron/abstract"
+	"github.com/duanchi/heron/abstract"
 	"net/url"
 	"strconv"
 	"strings"

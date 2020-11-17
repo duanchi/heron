@@ -3,7 +3,7 @@ package websocket
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/types"
 	"net/http"
 )
 

@@ -2,7 +2,7 @@ package validate
 
 import (
 	"fmt"
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/types"
 	"gopkg.in/go-playground/validator.v9"
 	"reflect"
 	"strconv"

@@ -2,13 +2,13 @@ package bean
 
 import (
 	"fmt"
-	_interface "go.heurd.com/heron-go/heron/interface"
-	"go.heurd.com/heron-go/heron/rpc"
-	"go.heurd.com/heron-go/heron/server/middleware"
-	"go.heurd.com/heron-go/heron/server/route"
-	"go.heurd.com/heron-go/heron/server/validate"
-	"go.heurd.com/heron-go/heron/service"
-	"go.heurd.com/heron-go/heron/task"
+	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/rpc"
+	"github.com/duanchi/heron/server/middleware"
+	"github.com/duanchi/heron/server/route"
+	"github.com/duanchi/heron/server/validate"
+	"github.com/duanchi/heron/service"
+	"github.com/duanchi/heron/task"
 	"reflect"
 )
 

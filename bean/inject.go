@@ -1,7 +1,7 @@
 package bean
 
 import (
-	"go.heurd.com/heron-go/heron/config"
+	"github.com/duanchi/heron/config"
 	"reflect"
 	"regexp"
 	"strconv"

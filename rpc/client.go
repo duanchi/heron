@@ -3,9 +3,9 @@ package rpc
 import (
 	"bytes"
 	"encoding/json"
-	_interface "go.heurd.com/heron-go/heron/interface"
-	"go.heurd.com/heron-go/heron/types"
-	"go.heurd.com/heron-go/heron/util"
+	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/types"
+	"github.com/duanchi/heron/util"
 	"io/ioutil"
 	"net/http"
 	"reflect"

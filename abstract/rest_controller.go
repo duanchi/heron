@@ -3,7 +3,7 @@ package abstract
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"go.heurd.com/heron-go/heron/types"
+	"github.com/duanchi/heron/types"
 )
 
 type RestController struct {

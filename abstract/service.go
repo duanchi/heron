@@ -1,6 +1,6 @@
 package abstract
 
-import _interface "go.heurd.com/heron-go/heron/interface"
+import _interface "github.com/duanchi/heron/interface"
 
 type Service struct {
 	_interface.ServiceInterface

@@ -1,10 +1,10 @@
 package cache
 
 import (
-	"go.heurd.com/heron-go/heron/cache/memory"
-	"go.heurd.com/heron-go/heron/cache/redis"
-	"go.heurd.com/heron-go/heron/config"
-	_interface "go.heurd.com/heron-go/heron/interface"
+	"github.com/duanchi/heron/cache/memory"
+	"github.com/duanchi/heron/cache/redis"
+	"github.com/duanchi/heron/config"
+	_interface "github.com/duanchi/heron/interface"
 	"net/url"
 	"reflect"
 )

@@ -1,7 +1,7 @@
 package yaml
 
 import (
-	"go.heurd.com/heron-go/heron/util"
+	"github.com/duanchi/heron/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"

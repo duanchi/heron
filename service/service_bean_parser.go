@@ -1,8 +1,8 @@
 package service
 
 import (
-	_interface "go.heurd.com/heron-go/heron/interface"
-	"go.heurd.com/heron-go/heron/types"
+	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/types"
 	"reflect"
 )
 
