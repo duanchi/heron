@@ -9,6 +9,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"os"
 	"reflect"
 	"strconv"
@@ -172,21 +173,31 @@ func (this *Request) Form (formData interface{}) *Request {
 	return this
 }
 
-func (this *Request) File (key string, filepath string) *Request {
-	return this.FileWithName(key, filepath, filepath)
+func (this *Request) File (key string, filepath string, mimeType string) *Request {
+	return this.FileWithName(key, filepath, filepath, mimeType)
 }
 
-func (this *Request) FileFromBytes (key string, file []byte, filename string) *Request {
-	return this.FileWithName(key, file, filename)
+func (this *Request) FileFromBytes (key string, file []byte, filename string, mimeType string) *Request {
+	return this.FileWithName(key, file, filename, mimeType)
 }
 
-func (this *Request) FileWithName (key string, file interface{}, filename string) *Request {
+func (this *Request) FileWithName (key string, file interface{}, filename string, mimeType string) *Request {
 
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 
 	// 关键的一步操作
-	fileWriter, err := bodyWriter.CreateFormFile(key, filename)
+	/*fileWriter, err := bodyWriter.CreateFormFile(key, filename)
+	if err != nil {
+		fmt.Println("error writing to buffer")
+		return this
+	}*/
+
+	mimeHeader := make(textproto.MIMEHeader)
+	mimeHeader.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, key, filename))
+	mimeHeader.Set("Content-Type", mimeType) //设置文件格式
+	fileWriter, err := bodyWriter.CreatePart(mimeHeader)
+
 	if err != nil {
 		fmt.Println("error writing to buffer")
 		return this
@@ -211,9 +222,11 @@ func (this *Request) FileWithName (key string, file interface{}, filename string
 		fileWriter.Write(file.([]byte))
 	}
 
-	contentType := bodyWriter.FormDataContentType()
+
+
+	formDataContentType := bodyWriter.FormDataContentType()
 	bodyWriter.Close()
-	this.Header("Content-Type", contentType)
+	this.Header("Content-Type", formDataContentType)
 	this.payload = bodyBuf.Bytes()
 
 	return this
