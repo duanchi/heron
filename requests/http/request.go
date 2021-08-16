@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"crypto/tls"
 	json2 "encoding/json"
 	"fmt"
 	"github.com/duanchi/heron/util/arrays"
@@ -12,6 +13,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Request struct {
@@ -25,6 +27,13 @@ type Request struct {
 	header http.Header
 	payload []byte
 	formData interface{}
+	options Options
+}
+
+type Options struct {
+	SkipCertificateVerify bool
+	CookieJar http.CookieJar
+	Timeout time.Duration
 }
 
 const (
@@ -129,6 +138,7 @@ func New() Request {
 	instance := Request{
 		initialed: true,
 		header: http.Header{},
+		options: Options{},
 	}
 	return instance
 }
@@ -237,6 +247,12 @@ func (this *Request) BearerToken (token string) *Request {
 	return this
 }
 
+func (this *Request) Options (options Options) *Request {
+	this.options = options
+
+	return this
+}
+
 func (this *Request) Response () (response Response, err error) {
 	if this.error != nil {
 		return Response{}, this.error
@@ -260,7 +276,18 @@ func (this *Request) Response () (response Response, err error) {
 
 	request.Header = this.header
 
-	httpResponse, err := (&http.Client{}).Do(request)
+	options := &http.Client{
+		Jar:           this.options.CookieJar,
+		Timeout:       this.options.Timeout,
+	}
+
+	if this.options.SkipCertificateVerify {
+		options.Transport = &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+	}
+
+	httpResponse, err := (options).Do(request)
 
 	if err != nil {
 		return
