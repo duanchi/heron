@@ -1,9 +1,8 @@
 package middleware
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
 	_interface "github.com/duanchi/heron/interface"
+	"github.com/gin-gonic/gin"
 	"reflect"
 )
 
@@ -41,10 +40,29 @@ func Init (httpServer *gin.Engine, aop string) {
 	}
 }
 
+func GetHandlersBeforeResponse () []gin.HandlerFunc {
+	var handlers []gin.HandlerFunc
+	for key, _ := range Middlewares {
+		index := key
+		handlers = append(handlers, Middlewares[index].Interface().(_interface.MiddlewareInterface).BeforeResponse)
+	}
+
+	return handlers
+}
+
+func GetHandlersAfterResponse () []gin.HandlerFunc {
+	var handlers []gin.HandlerFunc
+	for key, _ := range Middlewares {
+		index := key
+		handlers = append(handlers, Middlewares[index].Interface().(_interface.MiddlewareInterface).AfterResponse)
+	}
+
+	return handlers
+}
+
 func HandleAfterRoute (ctx *gin.Context) {
 	for key, _ := range Middlewares {
 		index := key
-		fmt.Println(Middlewares[index].String())
 		Middlewares[index].Interface().(_interface.MiddlewareInterface).AfterRoute(ctx)
 	}
 }

@@ -3,8 +3,12 @@ package http
 import (
 	"bytes"
 	json2 "encoding/json"
+	"fmt"
 	"github.com/duanchi/heron/util/arrays"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -118,8 +122,6 @@ func (this *Request) Method(method string) *Request {
 	} else {
 		this.method = METHOD_GET
 	}
-
-
 	return this
 }
 
@@ -156,6 +158,45 @@ func (this *Request) Form (formData interface{}) *Request {
 	case reflect.Map:
 		this.queryString = buildQueryString(formData)
 	}
+
+	return this
+}
+
+func (this *Request) File (file interface{}) *Request {
+
+	bodyBuf := &bytes.Buffer{}
+	bodyWriter := multipart.NewWriter(bodyBuf)
+
+	// 关键的一步操作
+	fileWriter, err := bodyWriter.CreateFormFile("uploadfile", file.(string))
+	if err != nil {
+		fmt.Println("error writing to buffer")
+		return this
+	}
+
+	switch reflect.TypeOf(file).Kind() {
+	case reflect.String:
+		// 打开文件句柄操作
+		fh, err := os.Open(file.(string))
+		if err != nil {
+			fmt.Println("error opening file")
+			return this
+		}
+		defer fh.Close()
+		// iocopy
+		_, err = io.Copy(fileWriter, fh)
+		if err != nil {
+			fmt.Println("error copy file", err.Error())
+			return this
+		}
+	case reflect.Array:
+		fileWriter.Write(file.([]byte))
+	}
+
+	contentType := bodyWriter.FormDataContentType()
+	bodyWriter.Close()
+	this.Header("Content-Type", contentType)
+	this.payload = bodyBuf.Bytes()
 
 	return this
 }

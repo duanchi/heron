@@ -1,9 +1,9 @@
 package route
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/duanchi/heron/server/handler"
 	"github.com/duanchi/heron/server/middleware"
+	"github.com/gin-gonic/gin"
 	"reflect"
 	"strings"
 )
@@ -34,6 +34,15 @@ func (this BaseRoutesMap) Init (httpServer *gin.Engine) {
 
 			handlers = append(handlers, func(ctx *gin.Context) {
 				handler.RouteHandle(route, BaseRoutes[name], ctx, httpServer)
+				afterResponseHandlers := middleware.GetHandlersAfterResponse()
+				if len(afterResponseHandlers) > 0 {
+					go func() {
+						for _, afterResponseHandler  := range afterResponseHandlers {
+							afterResponseHandler(ctx)
+						}
+					}()
+				}
+				ctx.Next()
 			})
 
 			if method == "ALL" {

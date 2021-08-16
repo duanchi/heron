@@ -1,8 +1,9 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/server/middleware"
+	"github.com/gin-gonic/gin"
 	"reflect"
 )
 
@@ -12,5 +13,10 @@ func RouteHandle(path string, handle reflect.Value, ctx *gin.Context, engine *gi
 
 	handle.Interface().(_interface.RouterInterface).Handle(ctx.Request.URL.Path, method, params, ctx)
 
+	handlers := middleware.GetHandlersBeforeResponse()
+
+	for _, handler := range handlers {
+		handler(ctx)
+	}
 	return
 }

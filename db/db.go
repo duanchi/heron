@@ -2,12 +2,12 @@ package db
 
 import (
 	"fmt"
+	"github.com/duanchi/heron/config"
+	config2 "github.com/duanchi/heron/types/config"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	// _ "github.com/mattn/go-sqlite3"
 	"github.com/xormplus/xorm"
-	"github.com/duanchi/heron/config"
-	config2 "github.com/duanchi/heron/types/config"
 	"log"
 	"net/url"
 	"strings"
@@ -149,6 +149,16 @@ func connect (dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engi
 			return
 		}
 
+	case "sqlserver":
+		fallthrough
+	case "mssql":
+		connection, err = xorm.NewEngine("sqlserver", dsnUrl.String())
+
+		err = connection.Ping()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	/*case "sqlite":
 
 		connection, err = xorm.NewEngine("sqlite3", dbConfig.Dsn[9:])
@@ -166,7 +176,9 @@ func connect (dsnUrl *url.URL, dbConfig config2.DbConfig) (connection *xorm.Engi
 		*/
 	}
 
-	fmt.Println("connect database success!")
+	if err == nil {
+		fmt.Println("connect database success!")
+	}
 	if config.Get("Env").(string) == "development" {
 		connection.ShowSQL()
 	}

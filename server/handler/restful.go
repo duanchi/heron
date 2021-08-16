@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
 	_interface "github.com/duanchi/heron/interface"
+	"github.com/duanchi/heron/server/middleware"
 	"github.com/duanchi/heron/server/websocket"
 	"github.com/duanchi/heron/types"
+	"github.com/gin-gonic/gin"
+	uuid "github.com/satori/go.uuid"
 	"net/http"
 	"reflect"
 	"runtime/debug"
@@ -17,6 +18,7 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 	id := ctx.Param("id")
 	method := ctx.Request.Method
 	requestId := ctx.Request.Header.Get("Request-Id")
+	beforeResponseHandlers := middleware.GetHandlersBeforeResponse()
 	if requestId == "" {
 		requestId = uuid.NewV4().String()
 	}
@@ -128,8 +130,15 @@ func RestfulHandle(resource string, controller reflect.Value, ctx *gin.Context, 
 		case "DELETE":
 			status = 204
 		}
+
+		for _, handler := range beforeResponseHandlers {
+			handler(ctx)
+		}
 		ctx.JSON(status, response)
 	} else {
+		for _, handler := range beforeResponseHandlers {
+			handler(ctx)
+		}
 		panic(err)
 	}
 
