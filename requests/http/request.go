@@ -172,13 +172,21 @@ func (this *Request) Form (formData interface{}) *Request {
 	return this
 }
 
-func (this *Request) File (file interface{}) *Request {
+func (this *Request) File (key string, filepath string) *Request {
+	return this.FileWithName(key, filepath, filepath)
+}
+
+func (this *Request) FileFromBytes (key string, file []byte, filename string) *Request {
+	return this.FileWithName(key, file, filename)
+}
+
+func (this *Request) FileWithName (key string, file interface{}, filename string) *Request {
 
 	bodyBuf := &bytes.Buffer{}
 	bodyWriter := multipart.NewWriter(bodyBuf)
 
 	// 关键的一步操作
-	fileWriter, err := bodyWriter.CreateFormFile("uploadfile", file.(string))
+	fileWriter, err := bodyWriter.CreateFormFile(key, filename)
 	if err != nil {
 		fmt.Println("error writing to buffer")
 		return this
